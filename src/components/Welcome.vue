@@ -67,7 +67,7 @@ export default {
   border-radius: 20px;
   transition: 100ms;
   cursor: pointer;
-  box-shadow: 0px 5px 10px 0.5px #41b98977;
+  box-shadow: 0px 3px 5px 2px rgba(228, 228, 228, 0.5);
 }
 .btn:hover {
   background-color: #14a169;
