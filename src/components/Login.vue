@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { required, email } from "vuelidate/lib/validators";
 export default {
   data() {
@@ -63,28 +62,15 @@ export default {
   },
   methods: {
     submitted() {
-      axios
-        .post("https://mytodos-7797f.firebaseio.com/lgin.json", {
-          email: this.email,
-          password: this.password,
-          returnSecureToken: true,
-        })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      this.$store.dispatch("login", {
+        email: this.email,
+        password: this.password,
+      });
     },
-    // this.$store.dispatch("login", {
-    //   email: this.email,
-    //   password: this.password,
-    // });
     routeToSignUp() {
       this.$router.push("/signup");
     },
   },
 };
 </script>
-<style scoped>
-</style>
+

@@ -69,11 +69,11 @@
       <a @click="routeToLogin">Login</a>
       instead
     </p>
+    <button @click="gotoDash">Go to dashBoard</button>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import Terms from "./Terms";
 import { required, email, sameAs, minLength } from "vuelidate/lib/validators";
 export default {
@@ -111,25 +111,19 @@ export default {
   },
   methods: {
     submitted() {
-      console.log("Form submit attemped");
-      axios
-        .post("/accounts:signUp?key=AIzaSyDYv5ceogTvWLnsJe_vN7A1Kau-HpC9z44", {
-          email: this.email,
-          password: this.password,
-          returnSecureToken: true,
-        })
-        .then((response) => {
-          console.log(response, "signup success");
-        })
-        .catch((error) => {
-          console.log(error, "something went wromg");
-        });
-      // this.$store.dispatch("signup", {
-      //   email: this.email,
-      //   password: this.password,
-      // });
+      this.$store.dispatch("signup", {
+        email: this.email,
+        username: this.username,
+        password: this.password,
+        tnc: this.tnc,
+        todos: {
+          id: 123,
+        },
+      });
     },
-
+    gotoDash() {
+      this.$router.push("/dashboard");
+    },
     routeToLogin() {
       this.$router.push("/login");
     },

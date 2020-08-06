@@ -47,7 +47,7 @@
 <script>
 import { eventBus, today } from "../../main.js";
 import img1 from "../../assets/img/sky.jpg";
-import img2 from "../../assets/img/green.jpg";
+import img2 from "../../assets/img/alone.jpeg";
 export default {
   data() {
     return {
@@ -95,7 +95,6 @@ export default {
         dueDate: "30 July, 2020",
       });
       this.newItem = "";
-      this.setNewData(this.todos);
     },
     setNewData(value) {
       // Setting data to localStorage

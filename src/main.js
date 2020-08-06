@@ -11,7 +11,7 @@ Vue.config.productionTip = false;
 Vue.use(VueLidate);
 Vue.use(VueRouter);
 
-axios.defaults.baseURL = "https://identitytoolkit.googleapis.com/v1";
+axios.defaults.baseURL = "https://mytodos-7797f.firebaseio.com/";
 
 const router = new VueRouter({
   routes,
