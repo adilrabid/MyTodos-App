@@ -10,7 +10,7 @@
           <p class="userMetaEmail">bean@gmail.com</p>
         </div>
       </div>
-      <!-- <div>
+      <div>
         <div class="listOption listOption-myday">
           <p>My Day</p>
           <span>{{ todoCount }}</span>
@@ -31,49 +31,74 @@
           <p>Due</p>
           <span>{{ todoCount }}</span>
         </div>
-      </div>-->
-      UserData: {{userData}}
+      </div>
+      UserData: {{getUserData}}
       <div class="listOption listOption-logout" @click="logout">
         <p>Log out</p>
       </div>
     </div>
     <Lists></Lists>
     <transition name="Popup">
-      <Details @hideDetails="hideDetails" v-if="todoClicked"></Details>
+      <div v-if="todoClicked" class="todoDetails-wrap">
+        <div class="todoDetails">
+          <div class="todoDetails-head">
+            <div>
+              <h2 class="todoDetails-title">Title :</h2>
+              <p class="todoDetails-dataCreated">Created on :</p>
+            </div>
+            <button class="close-btn" @click="todoClicked = false">+</button>
+          </div>
+          <div class="todoDetails-option">
+            <label for>Add note</label>
+            <br />
+            <textarea class="todoDetails-addNote" rows="3">
+            Here is some note
+        </textarea>
+          </div>
+          <div class="todoDetails-option">
+            <label for>Add due data</label>
+            <br />
+            <input type="date" name id />
+          </div>
+          <div class="todoDetails-option">
+            <p>Delete</p>
+          </div>
+        </div>
+      </div>
     </transition>
   </div>
 </template>
 
 <script>
-import Details from "./Details";
 import Lists from "./Lists";
-import { eventBus } from "../../main.js";
 export default {
-  components: { Details, Lists },
+  components: { Lists },
   data() {
     return {
+      userData: null,
       todoClicked: false,
       bgUrl: "",
-      userData: null,
       todoCount: 6,
+      title: "hello world",
     };
   },
-  computed: {},
+  computed: {
+    getUserData() {
+      return this.$store.state.userData;
+    },
+  },
   methods: {
     hideDetails() {
       this.todoClicked = false;
     },
     logout() {
       this.$router.push("/signup");
+      localStorage.removeItem("idToken");
+      localStorage.removeItem("localId");
     },
   },
   created() {
-    eventBus.$on("showDetails", (todoIndex) => {
-      this.todoClicked = true;
-      console.log(todoIndex);
-    });
     this.$store.dispatch("getUserData");
-    this.userData = this.$store.state.userData;
   },
 };
 </script>
@@ -157,5 +182,48 @@ export default {
 }
 .listOption-logout:hover {
   background-color: rgba(220, 20, 60, 0.095);
+}
+.todoDetails-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.349);
+}
+.todoDetails {
+  height: 100%;
+  width: 400px;
+  background-color: rgb(245, 245, 245);
+  float: right;
+}
+.todoDetails-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.todoDetails-title {
+  margin: 0px;
+  padding: 15px 40px 10px;
+}
+.todoDetails-dataCreated {
+  padding: 15px 40px 10px;
+}
+.close-btn {
+  margin-top: 10px;
+  margin-right: 20px;
+  font-size: 40px;
+}
+.todoDetails-option {
+  background-color: #fff;
+  padding: 10px 20px;
+  margin: 10px 20px;
+}
+.todoDetails-addNote {
+  width: 100%;
+  padding: 10px 0px;
+  font-size: 18px;
+  outline: none;
+  border: none;
 }
 </style>

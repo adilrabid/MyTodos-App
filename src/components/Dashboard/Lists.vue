@@ -34,6 +34,7 @@
         <input
           @keyup.enter="addItem"
           @focus="addNewSymbol = 'O'"
+          @blur="addNewSymbol = '+'"
           v-model="newItem"
           class="addNewTodo"
           type="text"

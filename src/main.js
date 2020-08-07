@@ -31,8 +31,6 @@ const router = new VueRouter({
   },
 });
 
-export const eventBus = new Vue();
-
 export const today = new Date();
 new Vue({
   router,

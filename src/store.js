@@ -8,6 +8,8 @@ export const store = new Vuex.Store({
     idToken: localStorage.getItem("idToken"),
     localId: localStorage.getItem("localId"),
     userData: null,
+    currentUserEmail: "",
+    textObj: "",
   },
   actions: {
     signup: (context, formdata) => {
@@ -29,7 +31,6 @@ export const store = new Vuex.Store({
           console.log(error, "something went wromg");
         });
     },
-
     postUserData: (context, formData) => {
       if (!context.state.idToken) {
         return "Something went wrong!";
@@ -38,12 +39,12 @@ export const store = new Vuex.Store({
         .post("userData.json?auth=" + context.state.idToken, formData)
         .then((response) => {
           console.log(response);
+          context.state.currentUserEmail = formData.email; //this is for testing purpose
         })
         .catch((error) => {
           console.log(error);
         });
     },
-
     login: (context, formdata) => {
       axiosAuth
         .post(
@@ -56,7 +57,7 @@ export const store = new Vuex.Store({
         )
         .then((response) => {
           console.log(response, "Login success");
-          context.commit("authUser", {
+          context.commit("setUserToken", {
             idToken: response.data.idToken,
             localId: response.data.localId,
           });
@@ -74,10 +75,12 @@ export const store = new Vuex.Store({
         .get("userData.json?auth=" + context.state.idToken)
         .then((response) => {
           const alldata = response.data;
+          console.log("alldata", alldata);
           const userData = [];
           for (let uid in alldata) {
             const data = alldata[uid];
             data.uid = uid;
+            console.log(data);
             userData.push(data);
           }
           console.log("userData[0]:", userData[0]);
@@ -89,11 +92,11 @@ export const store = new Vuex.Store({
     },
   },
   mutations: {
-    setUserToken: (state, authData) => {
-      localStorage.setItem("idToken", authData.idToken);
-      localStorage.setItem("localId", authData.localId);
-      // state.idToken = authData.idToken;
-      // state.localId = authData.localId;
+    setUserToken: (state, authTokens) => {
+      localStorage.setItem("idToken", authTokens.idToken);
+      localStorage.setItem("localId", authTokens.localId);
+      // state.idToken = authTokens.idToken;
+      // state.localId = authTokens.localId;
     },
     storeUserData: (state, userData) => {
       state.userData = userData;
