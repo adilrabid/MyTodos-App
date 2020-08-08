@@ -2,28 +2,27 @@
   <div class="container">
     <div class="form-wrap">
       <form class="form" @submit.prevent="submitted">
-        <h2 class="form-heading">Login</h2>
-
+        <h2 class="form-heading">LOG IN</h2>
         <div :class="{ invalid: $v.email.$error }">
-          <label for="email-s">Email :</label>
-          <input @blur="$v.email.$touch()" v-model="email" type="email" id="email-s" class="email" />
+          <label for="email-l">Email :</label>
+          <input @blur="$v.email.$touch()" v-model="email" type="email" id="email-l" class="email" />
           <p v-if="!$v.email.email" class="errorMsg error">Please enter a valid email!</p>
         </div>
         <div :class="{ invalid: $v.password.$error }">
-          <label for="password-s">Password :</label>
+          <label for="password-l">Password :</label>
           <input
             @blur="$v.password.$touch()"
             v-model="password"
             type="password"
-            id="password-s"
+            id="password-l"
             class="password"
+            autocomplete="false"
           />
-          <p
-            v-if="$v.password.$error"
-            class="errorMsg error"
-          >Password must be at least 6 characters!</p>
         </div>
-        <input :disabled="validationSuccess" type="submit" value="SIGN UP" class="submit" />
+        <input :disabled="validationSuccess" type="submit" value="LOG IN" class="submit" />
+        <transition name="fade">
+          <p v-if="loginError" class="errorMsg error" style="marginTop: 0.1px">{{ errorMsg }}</p>
+        </transition>
       </form>
     </div>
     <p class="suggession">
@@ -38,9 +37,22 @@ import { required, email } from "vuelidate/lib/validators";
 export default {
   data() {
     return {
-      email: "",
+      email: null,
       password: null,
+      errorMsg: "Wrong email or passord, try again!",
     };
+  },
+  watch: {
+    authenticated(value) {
+      console.log("idtoken added", value);
+      this.$router.push("./dashboard");
+    },
+    loginError(value) {
+      setTimeout(() => {
+        this.$store.state.loginError = false;
+        return value;
+      }, 5000);
+    },
   },
   validations: {
     email: {
@@ -53,15 +65,26 @@ export default {
   },
   computed: {
     validationSuccess() {
-      if (this.$v.$error == false) {
+      if (
+        this.email != null &&
+        this.password != null &&
+        this.$v.$error == false
+      ) {
         return false;
       } else {
         return true;
       }
     },
+    loginError() {
+      return this.$store.state.loginError;
+    },
   },
   methods: {
     submitted() {
+      if (!this.email || !this.password) {
+        alert("Please fillup all the fields first!");
+        return;
+      }
       this.$store.dispatch("login", {
         email: this.email,
         password: this.password,
@@ -73,4 +96,13 @@ export default {
   },
 };
 </script>
-
+<style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 300ms;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: scaleY(0);
+}
+</style>

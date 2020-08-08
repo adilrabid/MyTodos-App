@@ -2,7 +2,13 @@
   <div class="dashboard">
     <div class="sidePanel">
       <div class="appLogo">
-        <img src="../../assets/logo.jpg" alt="applogo" height="40px" width="auto" />
+        <img
+          src="../../assets/logo.jpg"
+          alt="applogo"
+          height="50px"
+          width="auto"
+          style="display: block"
+        />
       </div>
       <div class="userProfile">
         <div class="userMeta">
@@ -92,13 +98,28 @@ export default {
       this.todoClicked = false;
     },
     logout() {
-      this.$router.push("/signup");
       localStorage.removeItem("idToken");
       localStorage.removeItem("localId");
+      this.$store.state.tempIdToken = null;
+      this.$router.push("/login");
     },
   },
   created() {
     this.$store.dispatch("getUserData");
+  },
+  beforeRouteLeave(to, from, next) {
+    if (localStorage.getItem("idToken")) {
+      if (confirm("Confirm leave? you will be logged out")) {
+        localStorage.removeItem("idToken");
+        localStorage.removeItem("localId");
+        this.$store.state.tempIdToken = null;
+        next();
+      } else {
+        next(false);
+      }
+    } else {
+      next();
+    }
   },
 };
 </script>
@@ -119,6 +140,7 @@ export default {
   position: relative;
 }
 .appLogo {
+  margin-top: 20px;
   width: 100%;
 }
 .appLogo img {
@@ -136,8 +158,14 @@ export default {
   margin-right: 15px;
   border-radius: 50%;
 }
+.userMeta {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 15px;
+  color: #071a52;
+}
 .userMetaName {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 600;
   margin: 0 0 5px 0;
 }
@@ -148,30 +176,36 @@ export default {
 }
 .listOption {
   transition: 200ms;
-  padding: 12px 20px;
+  padding: 15px 30px;
   display: flex;
   justify-content: space-between;
   cursor: pointer;
+  color: #071a52;
+  font-weight: bold;
+  font-size: 18px;
 }
-
 .listOption p {
   margin: 0;
-  font-size: 16px;
 }
-.listOption-myday {
+.listOption-myday:hover {
   color: green;
+  background-color: rgba(0, 128, 0, 0.2);
 }
-.listOption-important {
-  color: rgb(255, 149, 167);
+.listOption-important:hover {
+  color: rgb(24, 127, 230);
+  background-color: rgba(30, 143, 255, 0.2);
 }
-.listOption-tasks {
+.listOption-tasks:hover {
   color: purple;
+  background-color: rgba(128, 0, 128, 0.2);
 }
-.listOption-completed {
+.listOption-completed:hover {
   color: orange;
+  background-color: rgba(255, 166, 0, 0.2);
 }
-.listOption-due {
+.listOption-due:hover {
   color: crimson;
+  background-color: rgba(220, 20, 60, 0.2);
 }
 .listOption-logout {
   color: red;

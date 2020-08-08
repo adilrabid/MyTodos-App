@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <transition name="slide-fade" mode="out-in">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -20,7 +22,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   height: 100%;
-  width: 100%;
+  width: 100vw;
+  overflow: hidden;
 }
 
 a {
@@ -53,5 +56,24 @@ a {
 .Popup-leave-to {
   /* transform: translateY(-10px); */
   opacity: 0;
+}
+
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.slide-fade-enter
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(50px);
+  opacity: 0;
+}
+.slide-fade-enter-active {
+  transition: all 100ms ease;
+}
+.slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+.slide-fade-leave-active {
+  transition: all 100ms ease;
 }
 </style>

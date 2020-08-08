@@ -2,14 +2,16 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axiosDB from "axios";
 import axiosAuth from "./axiosAuth";
+import { router } from "./main.js";
 Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
     idToken: localStorage.getItem("idToken"),
     localId: localStorage.getItem("localId"),
-    userData: null,
-    currentUserEmail: "",
-    textObj: "",
+    tempIdToken: null,
+    tempLocalId: null,
+    loginError: false,
+    signupError: false,
   },
   actions: {
     signup: (context, formdata) => {
@@ -21,31 +23,43 @@ export const store = new Vuex.Store({
         })
         .then((response) => {
           console.log(response, "signup success");
-          context.commit("setUserToken", {
-            idToken: response.data.idToken,
-            localId: response.data.localId,
-          });
-          context.dispatch("postUserData", formdata); // Posting user data ot the realtime database
-        })
-        .catch((error) => {
-          console.log(error, "something went wromg");
-        });
-    },
-    postUserData: (context, formData) => {
-      if (!context.state.idToken) {
-        return "Something went wrong!";
-      }
-      axiosDB
-        .post("userData.json?auth=" + context.state.idToken, formData)
-        .then((response) => {
-          console.log(response);
-          context.state.currentUserEmail = formData.email; //this is for testing purpose
+          context.dispatch("createUserDB", formdata); // creating a user database in the realtime database
+          router.push("/login");
         })
         .catch((error) => {
           console.log(error);
+          context.state.signupError = true;
+        });
+    },
+    createUserDB: (context, formData) => {
+      console.log("createUserDB point 1");
+      if (!context.state.tempIdToken) {
+        return "Something went wrong!";
+      }
+      console.log("createUserDB point 2");
+      // some test code here :
+      let userLocalid = context.state.localId;
+      let data = {
+        uid: userLocalid,
+        email: formData.email,
+        username: formData.username,
+        tnc: formData.tnc,
+        profilePic: "",
+        todos: [{ todo1: "Go to school" }],
+      };
+      axiosDB
+        .post("userData.json?auth=" + context.state.tempIdToken, data)
+        .then((response) => {
+          console.log(response);
+          console.log("new user database created");
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log("user database couldn't be created");
         });
     },
     login: (context, formdata) => {
+      console.log("login Action entered");
       axiosAuth
         .post(
           "/accounts:signInWithPassword?key=AIzaSyDYv5ceogTvWLnsJe_vN7A1Kau-HpC9z44",
@@ -56,14 +70,22 @@ export const store = new Vuex.Store({
           }
         )
         .then((response) => {
-          console.log(response, "Login success");
+          context.commit("setTempUserToken", {
+            idToken: response.data.idToken,
+            localId: response.data.localId,
+          });
           context.commit("setUserToken", {
             idToken: response.data.idToken,
             localId: response.data.localId,
           });
+          console.log("Login success");
+          console.log("Localstoraged token : ", context.state.idToken);
+          console.log("Temorery storaged token : ", context.state.tempIdToken);
+          router.push("/dashboard");
         })
         .catch((error) => {
-          console.log(error, "login failed");
+          console.log(error);
+          context.state.loginError = true;
         });
     },
     getUserData: (context) => {
@@ -95,8 +117,10 @@ export const store = new Vuex.Store({
     setUserToken: (state, authTokens) => {
       localStorage.setItem("idToken", authTokens.idToken);
       localStorage.setItem("localId", authTokens.localId);
-      // state.idToken = authTokens.idToken;
-      // state.localId = authTokens.localId;
+    },
+    setTempUserToken: (state, authTokens) => {
+      state.tempIdToken = authTokens.idToken;
+      state.tempLocalId = authTokens.localId;
     },
     storeUserData: (state, userData) => {
       state.userData = userData;

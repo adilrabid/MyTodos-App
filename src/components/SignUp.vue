@@ -5,7 +5,7 @@
         <Terms @hideTnc="showTnc = $event" v-if="showTnc"></Terms>
       </transition>
       <form class="form" @submit.prevent="submitted">
-        <h2 class="form-heading">Sign Up</h2>
+        <h2 class="form-heading">SIGN UP</h2>
         <div :class="{ invalid: $v.username.$error }">
           <label for="username-s">Username :</label>
           <input
@@ -30,6 +30,7 @@
             type="password"
             id="password-s"
             class="password"
+            autocomplete="false"
           />
           <p
             v-if="$v.password.$error"
@@ -44,6 +45,7 @@
             type="password"
             id="cPassword-s"
             class="password"
+            autocomplete="false"
           />
           <p v-if="$v.confirmPassword.$error" class="errorMsg error">Passwords didn't matched!</p>
         </div>
@@ -61,7 +63,6 @@
           </div>
         </div>
         <input :disabled="validationSuccess" type="submit" value="SIGN UP" class="submit" />
-        <p v-if="showAccountCreated">Account created successfully</p>
       </form>
     </div>
     <p class="suggession">
@@ -69,7 +70,6 @@
       <a @click="routeToLogin">Login</a>
       instead
     </p>
-    <button @click="gotoDash">Go to dashBoard</button>
   </div>
 </template>
 
@@ -80,13 +80,12 @@ export default {
   components: { Terms },
   data() {
     return {
-      username: "",
-      email: "",
+      username: null,
+      email: null,
       password: null,
       confirmPassword: null,
       tnc: false,
       showTnc: false,
-      showAccountCreated: false,
     };
   },
   validations: {
@@ -111,18 +110,16 @@ export default {
   },
   methods: {
     submitted() {
+      if (this.validationSuccess) {
+        alert("Please fillup all the fields first!");
+        return;
+      }
       this.$store.dispatch("signup", {
         email: this.email,
         username: this.username,
         password: this.password,
         tnc: this.tnc,
-        todos: {
-          id: 123,
-        },
       });
-    },
-    gotoDash() {
-      this.$router.push("/dashboard");
     },
     routeToLogin() {
       this.$router.push("/login");
@@ -130,7 +127,13 @@ export default {
   },
   computed: {
     validationSuccess() {
-      if (this.tnc == true && this.$v.$error == false) {
+      if (
+        this.username != null &&
+        this.email != null &&
+        this.password != null &&
+        this.$v.tnc.$model == true &&
+        this.$v.$error == false
+      ) {
         return false;
       } else {
         return true;
@@ -161,7 +164,7 @@ form.form {
   max-width: 400px;
   margin: 0 auto;
   box-shadow: 0px 3px 5px 2px rgba(228, 228, 228, 0.5);
-  padding: 20px 40px;
+  padding: 30px 40px;
 }
 .form-heading {
   display: block;
@@ -215,10 +218,9 @@ label[for="tnc-s"] {
   cursor: pointer;
 }
 .submit:disabled {
-  background-color: #4dca92;
+  background-color: #4dca9292;
   cursor: not-allowed;
 }
-
 .invalid input {
   transition: 300ms;
   border-color: red;
@@ -233,7 +235,7 @@ label[for="tnc-s"] {
   margin-bottom: 3px;
 }
 .suggession {
-  margin-top: 15px;
+  margin-top: 20px;
 }
 .suggession a {
   cursor: pointer;

@@ -2,20 +2,18 @@ import Vue from "vue";
 import App from "./App.vue";
 import VueLidate from "vuelidate";
 import VueRouter from "vue-router";
+import axios from "axios";
 import { routes } from "./routes";
 import { store } from "./store";
-import axios from "axios";
 
 Vue.config.productionTip = false;
-
 Vue.use(VueLidate);
 Vue.use(VueRouter);
 
 axios.defaults.baseURL = "https://mytodos-7797f.firebaseio.com/";
 
-const router = new VueRouter({
+export const router = new VueRouter({
   routes,
-
   mode: "history",
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

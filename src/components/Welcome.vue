@@ -3,9 +3,9 @@
     <img class="applogo" src="../assets/logo.jpg" alt="Logo" />
     <div class="welcome">
       <h1 class="welcome-heading">My Todo Lists</h1>
-      <h3
+      <p
         class="welcome-msg"
-      >A simple and faster way to keep track of all your work to do in a nutshell.</h3>
+      >A simple and faster way to keep track of all your work to do in a nutshell.</p>
       <p class="routeToMsg">Use My Todolist for free</p>
       <button @click="routeToSignUp" class="btn">Sign Up</button>
       <p class="routeToMsg">Already has an account?</p>
@@ -53,6 +53,7 @@ export default {
 }
 .welcome-msg {
   padding: 0 15%;
+  font-size: 22px;
 }
 
 .btn {
@@ -64,7 +65,7 @@ export default {
   outline: none;
   margin: 10px auto;
   font-size: 20px;
-  border-radius: 20px;
+  border-radius: 5px;
   transition: 100ms;
   cursor: pointer;
   box-shadow: 0px 3px 5px 2px rgba(228, 228, 228, 0.5);
