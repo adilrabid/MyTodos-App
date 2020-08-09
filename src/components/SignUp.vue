@@ -5,7 +5,7 @@
         <Terms @hideTnc="showTnc = $event" v-if="showTnc"></Terms>
       </transition>
       <form class="form" @submit.prevent="submitted">
-        <h2 class="form-heading">SIGN UP</h2>
+        <h2 class="form-heading">Sign Up</h2>
         <div :class="{ invalid: $v.username.$error }">
           <label for="username-s">Username :</label>
           <input
@@ -62,7 +62,7 @@
             <span class="tncLink" @click="showTnc = true">terms and condition</span>.
           </div>
         </div>
-        <input :disabled="validationSuccess" type="submit" value="SIGN UP" class="submit" />
+        <input :disabled="validationSuccess" type="submit" value="Sign Up" class="submit" />
       </form>
     </div>
     <p class="suggession">

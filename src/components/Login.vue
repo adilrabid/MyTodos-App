@@ -2,7 +2,7 @@
   <div class="container">
     <div class="form-wrap">
       <form class="form" @submit.prevent="submitted">
-        <h2 class="form-heading">LOG IN</h2>
+        <h2 class="form-heading">Login</h2>
         <div :class="{ invalid: $v.email.$error }">
           <label for="email-l">Email :</label>
           <input @blur="$v.email.$touch()" v-model="email" type="email" id="email-l" class="email" />
@@ -19,7 +19,7 @@
             autocomplete="false"
           />
         </div>
-        <input :disabled="validationSuccess" type="submit" value="LOG IN" class="submit" />
+        <input :disabled="validationSuccess" type="submit" value="Login" class="submit" />
         <transition name="fade">
           <p v-if="loginError" class="errorMsg error" style="marginTop: 0.1px">{{ errorMsg }}</p>
         </transition>
