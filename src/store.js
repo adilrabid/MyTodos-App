@@ -8,15 +8,17 @@ export const store = new Vuex.Store({
   state: {
     idToken: localStorage.getItem("idToken"),
     localId: localStorage.getItem("localId"),
+    dbId: localStorage.getItem("dbId"),
     tempIdToken: null,
     tempLocalId: null,
     tempSignupIdToken: null,
     tempSignupLocalId: null,
     loginError: false,
     signupError: false,
-    userData: null,
+    userData: "",
     loadingState: false,
     loadingStateMsg: "",
+    todos: "",
   },
   actions: {
     signup: (context, formdata) => {
@@ -52,7 +54,7 @@ export const store = new Vuex.Store({
         username: formData.username,
         tnc: formData.tnc,
         profilePic: "",
-        todos: [{ todo1: "Go to school" }],
+        todos: [],
       };
       axiosDB
         .post("userData.json?auth=" + context.state.tempSignupIdToken, data)
@@ -113,19 +115,16 @@ export const store = new Vuex.Store({
           for (let dbId in alldata) {
             const data = alldata[dbId];
             data.dbId = dbId;
-            console.log("data.uid : ", data.uid);
-            console.log("data : ", data);
             if (data.uid == localStorage.getItem("localId")) {
               userData = data;
               localStorage.setItem("dbId", dbId);
             }
           }
-          console.log("userData : ", typeof userData, userData);
+          context.dispatch("getTodos");
           context.commit("storeUserData", userData);
         })
         .catch((error) => {
-          console.log("getUserData action error");
-          console.log(error);
+          return error;
         });
     },
     storeTodo: (context, todos) => {
@@ -139,15 +138,89 @@ export const store = new Vuex.Store({
         .post(
           "userData/" +
             localStorage.getItem("dbId") +
-            ".json?auth=" +
+            "/todos.json?auth=" +
             context.getters.getAvailableIdToken,
           todos
         )
         .then((response) => {
           console.log("storing success", response);
+          context.dispatch("getTodos");
         })
         .catch((error) => {
           console.log("storing failed", error);
+        });
+    },
+    getTodos: (context) => {
+      if (!context.state.tempIdToken && !context.state.idToken) {
+        return "Something went wrong!";
+      }
+      let query =
+        "userData/" +
+        localStorage.getItem("dbId") +
+        "/todos.json?auth=" +
+        context.getters.getAvailableIdToken;
+      axiosDB
+        .get(query)
+        .then((response) => {
+          const todos = response.data;
+          let allTodos = [];
+          for (let key in todos) {
+            let todo = todos[key];
+            todo.key = key;
+            allTodos.push(todo);
+          }
+          context.commit("storeTodos", allTodos);
+        })
+        .catch((error) => {
+          console.log("get todos action error");
+          console.log(error);
+        });
+    },
+    deleteTodo: (context, todoKey) => {
+      console.log(todoKey);
+      console.log("DeleteTodo action entered");
+      if (!context.state.tempIdToken && !context.state.idToken) {
+        console.log("DeleteTodo action discontinued");
+        return "Something went wrong!";
+      }
+      console.log("DeleteTodo step1 localid detected");
+      axiosDB
+        .delete(
+          "userData/" +
+            localStorage.getItem("dbId") +
+            "/todos/" +
+            todoKey +
+            ".json?auth=" +
+            context.getters.getAvailableIdToken
+        )
+        .then((response) => {
+          context.dispatch("getTodos");
+          return response;
+        });
+    },
+    updateTodo: (context, { todoKey, field, value }) => {
+      console.log("UpdateTodo action entered");
+      if (!context.state.tempIdToken && !context.state.idToken) {
+        console.log("UpdateTodo action discontinued");
+        return "Something went wrong!";
+      }
+      console.log("UpdateTodo step1 localid detected");
+      console.log(field, value);
+      axiosDB
+        .put(
+          "userData/" +
+            localStorage.getItem("dbId") +
+            "/todos/" +
+            todoKey +
+            "/note" +
+            ".json?auth=" +
+            context.getters.getAvailableIdToken,
+          value
+        )
+        .then((response) => {
+          console.log("UpdateTodo success");
+          context.dispatch("getTodos");
+          return response;
         });
     },
   },
@@ -168,6 +241,10 @@ export const store = new Vuex.Store({
       state.userData = data;
       state.loadingState = false;
     },
+    storeTodos: (state, data) => {
+      state.todos = data;
+      console.log("current todos[] : ", state.todos);
+    },
   },
   getters: {
     getAvailableIdToken: (state) => {
@@ -179,6 +256,9 @@ export const store = new Vuex.Store({
     },
     userData: (state) => {
       return state.userData;
+    },
+    getStoredTodos: (state) => {
+      return state.todos;
     },
   },
 });

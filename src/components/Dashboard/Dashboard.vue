@@ -39,9 +39,12 @@
           <span>{{ todoCount }}</span>
         </div>
       </div>-->
-      UserData:
-      <br />
-      {{userData}}
+      <p style="fontSize: 13px">
+        UserData:
+        <br />
+        {{userData}}
+      </p>
+
       <div class="listOption listOption-logout" @click="logout">
         <p>Log out</p>
       </div>
@@ -52,7 +55,7 @@
         <div>
           <span>
             <h2 class="allLists-title">{{allListsTitle}}</h2>
-            <p class="allLists-date">{{currentDate}}</p>
+            <p class="allLists-date">{{currentDate.date}}</p>
           </span>
           <span>
             <button class="allLists-menuBtn">...</button>
@@ -60,20 +63,22 @@
         </div>
         <ul class="todoItems">
           <!-- <li v-for="(todo,index) in todos" :key="index" > -->
-          <li v-for="(singleData,index) in getNewData" :key="index" class="todoItem">
+          <li
+            v-for="(todo,index) in getStoredTodos"
+            :key="index"
+            @click="showDetails(index)"
+            class="todoItem"
+          >
             <div class="todoCompleteTitle">
-              <input type="checkbox" class="completedCheckbox" />
-              <div @click="showDetails(index)" class="todoContent">
-                <p class="todoTitle">{{singleData.name}}</p>
-                <p class="todo-category">{{singleData.type}}</p>
+              <input type="checkbox" class="completedCheckbox" :value="important" />
+              <div class="todoContent">
+                <p class="todoTitle">{{todo.name}}</p>
+                <p class="todo-category">{{todo.type}}</p>
               </div>
             </div>
             <div class="importantStarIcon">⁂</div>
           </li>
         </ul>
-        <p style="color: white" v-for="(singleData,index) in getNewData" :key="index">
-          <br />
-        </p>
         <div class="addNewTodo-wrap">
           <span class="addNewTodo-symbol">{{addNewSymbol}}</span>
           <input
@@ -94,26 +99,29 @@
         <div class="todoDetails">
           <div class="todoDetails-head">
             <div>
-              <h2 class="todoDetails-title">Title :</h2>
-              <p class="todoDetails-dataCreated">Created on :</p>
+              <h2 class="todoDetails-title">{{todoTitle}}</h2>
+              <p class="todoDetails-dataCreated">Created on : {{dateCreated}}</p>
             </div>
             <button class="close-btn" @click="todoClicked = false">+</button>
           </div>
           <div class="todoDetails-option">
             <label for>Add note</label>
             <br />
-            <textarea class="todoDetails-addNote" rows="3">
-            Here is some note
-        </textarea>
+            <textarea
+              @keyup.enter="updateTodo(note)"
+              class="todoDetails-addNote"
+              rows="3"
+              v-model="note"
+            ></textarea>
           </div>
           <div class="todoDetails-option">
             <label for>Add due data</label>
             <br />
             <input type="date" name id />
           </div>
-          <div class="todoDetails-option">
+          <button class="todoDetails-option" @click="deleteTodo">
             <p>Delete</p>
-          </div>
+          </button>
         </div>
       </div>
     </transition>
@@ -130,16 +138,21 @@ export default {
       todoClicked: false,
       bgUrl: "",
       todoCount: 6,
-      title: "hello world",
+
       // for All list
       newItem: "",
       allListsTitle: "My Day",
       category: "My Day",
       completed: false,
-      note: "",
+      important: false,
       image: [img1, img2],
-      test: ["lol"],
       addNewSymbol: "+",
+      // for todo details
+      note: "",
+      todoTitle: "",
+      dateCreated: "",
+      dueDate: "",
+      todoKey: "",
     };
   },
   computed: {
@@ -148,16 +161,40 @@ export default {
     },
     // for all lists
     currentDate() {
+      let day = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thirsday",
+        "Friday",
+        "Saturday",
+      ];
+      let monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
       let date =
-        today.getFullYear() +
-        "-" +
-        (today.getMonth() + 1) +
-        "-" +
-        today.getDate();
+        day[today.getDay()] +
+        ", " +
+        today.getDate() +
+        " " +
+        monthNames[today.getMonth()] +
+        " " +
+        today.getFullYear();
       let time =
         today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      let currentDate = date + " " + time;
-      return currentDate;
+      return { date, time };
     },
     showBg() {
       return { backgroundImage: "url(" + this.image[1] + ")" };
@@ -165,6 +202,9 @@ export default {
     getNewData() {
       let getSavedData = JSON.parse(localStorage.getItem("User1", "User1"));
       return getSavedData;
+    },
+    getStoredTodos() {
+      return this.$store.getters.getStoredTodos;
     },
   },
   methods: {
@@ -185,12 +225,36 @@ export default {
         type: this.category,
         completed: this.completed,
         note: this.note,
-        dateCreated: "24 July, 2020",
-        dueDate: "30 July, 2020",
+        dateCreated: today.getTime(),
+        dueDate: "",
+        important: this.important,
       };
-      this.newItem = "";
       //store this data
       this.$store.dispatch("storeTodo", todos);
+      this.newItem = "";
+    },
+    showDetails(index) {
+      console.log("todo clicked");
+      this.todoTitle = this.getStoredTodos[index].name;
+      this.note = this.getStoredTodos[index].note;
+      this.dateCreated = this.getStoredTodos[index].dateCreated;
+      this.dueDate = this.getStoredTodos[index].dueDate;
+      this.todoKey = this.getStoredTodos[index].key;
+
+      this.todoClicked = true;
+    },
+    deleteTodo() {
+      console.log("Delete Attemped");
+      this.todoClicked = false;
+      this.$store.dispatch("deleteTodo", this.todoKey);
+    },
+    updateTodo(value) {
+      console.log(value);
+      this.$store.dispatch("updateTodo", {
+        todoKey: this.todoKey,
+        field: "note",
+        value,
+      });
     },
   },
   created() {
