@@ -212,7 +212,8 @@ export const store = new Vuex.Store({
             localStorage.getItem("dbId") +
             "/todos/" +
             todoKey +
-            "/note" +
+            "/" +
+            field +
             ".json?auth=" +
             context.getters.getAvailableIdToken,
           value
