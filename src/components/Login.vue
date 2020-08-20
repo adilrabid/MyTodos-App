@@ -5,7 +5,13 @@
         <h2 class="form-heading">Login</h2>
         <div :class="{ invalid: $v.email.$error }">
           <label for="email-l">Email :</label>
-          <input @blur="$v.email.$touch()" v-model="email" type="email" id="email-l" class="email" />
+          <input
+            @blur="$v.email.$touch()"
+            v-model.trim="email"
+            type="email"
+            id="email-l"
+            class="email"
+          />
           <p v-if="!$v.email.email" class="errorMsg error">Please enter a valid email!</p>
         </div>
         <div :class="{ invalid: $v.password.$error }">

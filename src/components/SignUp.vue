@@ -10,7 +10,7 @@
           <label for="username-s">Username :</label>
           <input
             @blur="$v.username.$touch()"
-            v-model="username"
+            v-model.trim="username"
             type="text"
             id="username-s"
             class="username"
@@ -19,7 +19,13 @@
         </div>
         <div :class="{ invalid: $v.email.$error }">
           <label for="email-s">Email :</label>
-          <input @blur="$v.email.$touch()" v-model="email" type="email" id="email-s" class="email" />
+          <input
+            @blur="$v.email.$touch()"
+            v-model.trim="email"
+            type="email"
+            id="email-s"
+            class="email"
+          />
           <p v-if="!$v.email.email" class="errorMsg error">Please enter a valid email!</p>
         </div>
         <div :class="{ invalid: $v.password.$error }">
@@ -178,7 +184,7 @@ label[for="tnc-s"] {
   margin-right: 5px;
 }
 .tncLink {
-  color: #17b978;
+  color: #009578;
   cursor: pointer;
   transition: all 200ms;
   font-weight: bold;
@@ -209,16 +215,16 @@ label[for="tnc-s"] {
   border: none;
   outline: none;
   border-radius: 5px;
-  background-color: #17b978;
+  background-color: #009578;
   color: white;
   transition: background-color 200ms;
 }
 .submit:hover {
-  background-color: #3fae7c;
+  background-color: #009578;
   cursor: pointer;
 }
 .submit:disabled {
-  background-color: #4dca9292;
+  background-color: #0095778e;
   cursor: not-allowed;
 }
 .invalid input {

@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <transition name="fade" mode="out-in">
-      <div v-if="loadingState" class="loadingState">{{ loadingStateMsg }}</div>
+      <div v-if="loadingState" class="loadingState">
+        <div>{{ loadingStateMsg }}</div>
+      </div>
     </transition>
     <transition name="slide-fade" mode="out-in">
       <router-view></router-view>
@@ -47,13 +49,48 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.823);
-  color: black;
+  background-color: rgba(255, 255, 255, 0.9);
+  /* color: black; */
   font-size: 50px;
   z-index: 100;
 }
+.loadingState div {
+  padding-bottom: 15px;
+  position: relative;
+}
+.loadingState div:after {
+  position: absolute;
+  bottom: 0;
+  content: "";
+  height: 5px;
+  width: 20%;
+  background-color: #009578;
+  border-radius: 20px;
+  animation-name: loading;
+  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+@keyframes loading {
+  0% {
+    left: 0%;
+  }
+  25% {
+    width: 30%;
+  }
+  50% {
+    left: 80%;
+    width: 20%;
+  }
+  75% {
+    width: 30%;
+  }
+  100% {
+    left: 0%;
+  }
+}
 a {
-  color: #17b978;
+  color: #009578;
 }
 .close-btn {
   display: inline-block;

@@ -48,7 +48,7 @@ export default {
   margin-bottom: 20px;
 }
 .welcome-heading {
-  color: #17b978;
+  color: #009578;
   margin-top: 0;
 }
 .welcome-msg {
@@ -57,7 +57,7 @@ export default {
 }
 
 .btn {
-  background-color: #17b978;
+  background-color: #009578;
   width: 250px;
   padding: 10px 0px;
   color: white;
@@ -71,7 +71,7 @@ export default {
   box-shadow: 0px 3px 5px 2px rgba(228, 228, 228, 0.5);
 }
 .btn:hover {
-  background-color: #14a169;
+  background-color: #009578;
 }
 .routeToMsg {
   margin-top: 30px;

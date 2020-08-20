@@ -3,6 +3,14 @@ import Vuex from "vuex";
 import axiosDB from "axios";
 import axiosAuth from "./axiosAuth";
 import { router } from "./main.js";
+import { dateTime } from "./main.js";
+// all images
+import img1 from "./assets/img/sea.jpg";
+import img2 from "./assets/img/night.jpg";
+import img3 from "./assets/img/green.jpg";
+import img4 from "./assets/img/sunrise.jpg";
+import img5 from "./assets/img/fairy.jpg";
+
 Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
@@ -19,6 +27,31 @@ export const store = new Vuex.Store({
     loadingState: false,
     loadingStateMsg: "",
     todos: "",
+    month: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
+    //for AllLists
+    backGround: "",
+    // for todo details
+    todoClicked: false,
+    clickedTodoIndex: null,
+    clickedTodoKey: null,
+    dateTimeString_dateCreated: "",
+    dateTimeString_dueDate: "",
+    // for settings
+    BG: [img1, img2, img3, img4, img5],
+    settingsClicked: false,
   },
   actions: {
     signup: (context, formdata) => {
@@ -55,6 +88,8 @@ export const store = new Vuex.Store({
         tnc: formData.tnc,
         profilePic: "",
         todos: [],
+        bgUrl: img3,
+        theme: "light",
       };
       axiosDB
         .post("userData.json?auth=" + context.state.tempSignupIdToken, data)
@@ -96,6 +131,7 @@ export const store = new Vuex.Store({
         .catch((error) => {
           console.log(error);
           context.state.loginError = true;
+          context.state.loadingState = false;
         });
     },
     getUserData: (context) => {
@@ -124,16 +160,25 @@ export const store = new Vuex.Store({
           context.commit("storeUserData", userData);
         })
         .catch((error) => {
+          if (
+            localStorage.getItem("idToken") &&
+            localStorage.getItem("localId") &&
+            localStorage.getItem("dbId")
+          ) {
+            console.warn("Session Expired!");
+            localStorage.removeItem("idToken");
+            localStorage.removeItem("localId");
+            localStorage.removeItem("dbId");
+            context.state.tempIdToken = null;
+            router.push("/login");
+          }
           return error;
         });
     },
     storeTodo: (context, todos) => {
-      console.log("storeTodo entered");
       if (!context.state.tempIdToken && !context.state.idToken) {
-        console.log("storeTodo action discontinued");
         return "Something went wrong!";
       }
-      console.log("storeTodo step1 localid detected");
       axiosDB
         .post(
           "userData/" +
@@ -151,6 +196,7 @@ export const store = new Vuex.Store({
         });
     },
     getTodos: (context) => {
+      console.log("getTodos initated");
       if (!context.state.tempIdToken && !context.state.idToken) {
         return "Something went wrong!";
       }
@@ -170,26 +216,24 @@ export const store = new Vuex.Store({
             allTodos.push(todo);
           }
           context.commit("storeTodos", allTodos);
+          context.state.todoClicked = false;
         })
         .catch((error) => {
-          console.log("get todos action error");
           console.log(error);
         });
     },
-    deleteTodo: (context, todoKey) => {
-      console.log(todoKey);
-      console.log("DeleteTodo action entered");
+    deleteTodo: (context) => {
       if (!context.state.tempIdToken && !context.state.idToken) {
-        console.log("DeleteTodo action discontinued");
         return "Something went wrong!";
       }
-      console.log("DeleteTodo step1 localid detected");
+      console.log("deleteTodo action entered");
+      console.log("To delete : ", context.state.clickedTodoKey);
       axiosDB
         .delete(
           "userData/" +
             localStorage.getItem("dbId") +
             "/todos/" +
-            todoKey +
+            context.state.clickedTodoKey +
             ".json?auth=" +
             context.getters.getAvailableIdToken
         )
@@ -198,30 +242,44 @@ export const store = new Vuex.Store({
           return response;
         });
     },
-    updateTodo: (context, { todoKey, field, value }) => {
-      console.log("UpdateTodo action entered");
+    updateTodo: (context, value) => {
       if (!context.state.tempIdToken && !context.state.idToken) {
-        console.log("UpdateTodo action discontinued");
-        return "Something went wrong!";
+        return;
       }
-      console.log("UpdateTodo step1 localid detected");
-      console.log(field, value);
       axiosDB
         .put(
           "userData/" +
             localStorage.getItem("dbId") +
             "/todos/" +
-            todoKey +
-            "/" +
-            field +
+            context.state.clickedTodoKey +
             ".json?auth=" +
             context.getters.getAvailableIdToken,
           value
         )
         .then((response) => {
-          console.log("UpdateTodo success");
           context.dispatch("getTodos");
           return response;
+        });
+    },
+    saveSettings: (context, value) => {
+      if (!context.state.tempIdToken && !context.state.idToken) {
+        console.log("problem saving settings");
+        return;
+      }
+      axiosDB
+        .put(
+          "userData/" +
+            localStorage.getItem("dbId") +
+            ".json?auth=" +
+            context.getters.getAvailableIdToken,
+          value
+        )
+        .then((response) => {
+          context.state.settingsClicked = false;
+          return response;
+        })
+        .catch((error) => {
+          console.log("saving error: ", error);
         });
     },
   },
@@ -244,7 +302,58 @@ export const store = new Vuex.Store({
     },
     storeTodos: (state, data) => {
       state.todos = data;
-      console.log("current todos[] : ", state.todos);
+    },
+    msToActual_creationDate(state, value) {
+      console.log("msToActual_creationDate entered!", value);
+      const createDate = new Date();
+      let date =
+        createDate.getDate(value) +
+        " " +
+        state.month[createDate.getMonth()] +
+        " " +
+        createDate.getFullYear();
+      let time = createDate.toLocaleTimeString();
+      state.dateTimeString_dateCreated = { date, time };
+    },
+    msToActual_dueDate(state, value) {
+      console.log("msToActual_dueDate entered!", value);
+      const dueDate = new Date(value);
+      let date =
+        dueDate.getDate() +
+        " " +
+        state.month[dueDate.getMonth()] +
+        " " +
+        dueDate.getFullYear();
+
+      let onlyDate =
+        dueDate.getFullYear() +
+        "-" +
+        addZeroBefore(dueDate.getMonth() + 1) +
+        "-" +
+        addZeroBefore(dueDate.getDate());
+
+      let time = dueDate.toLocaleTimeString();
+      let onlyTime =
+        addZeroBefore(dueDate.getHours()) +
+        ":" +
+        addZeroBefore(dueDate.getMinutes());
+
+      function addZeroBefore(num) {
+        if (num < 10) {
+          return "0" + num;
+        }
+        return num;
+      }
+
+      state.dateTimeString_dueDate = { date, onlyDate, time, onlyTime };
+    },
+    setBG(state, url) {
+      state.backGround = url;
+    },
+    showDetails(state, index) {
+      state.clickedTodoKey = state.todos[index].key;
+      state.clickedTodoIndex = index;
+      state.todoClicked = true;
     },
   },
   getters: {
@@ -260,6 +369,58 @@ export const store = new Vuex.Store({
     },
     getStoredTodos: (state) => {
       return state.todos;
+    },
+    getBG(state) {
+      return state.userData.bgUrl;
+    },
+    namedDateMonth() {
+      let day = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thirsday",
+        "Friday",
+        "Saturday",
+      ];
+      let month = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      return { day, month };
+    },
+    currentDate(state, getters) {
+      let date =
+        getters.namedDateMonth.day[dateTime.getDay()] +
+        ", " +
+        dateTime.getDate() +
+        " " +
+        getters.namedDateMonth.month[dateTime.getMonth()] +
+        " " +
+        dateTime.getFullYear();
+      let time =
+        dateTime.getHours() +
+        ":" +
+        dateTime.getMinutes() +
+        ":" +
+        dateTime.getSeconds();
+      return { date, time };
+    },
+    dateTimeString_dateCreated(state) {
+      return state.dateTimeString_dateCreated;
+    },
+    dateTimeString_dueDate(state) {
+      return state.dateTimeString_dueDate;
     },
   },
 });

@@ -29,7 +29,10 @@ export const router = new VueRouter({
   },
 });
 
-export const today = new Date();
+export const dateTime = new Date();
+
+export const ImageReader = new FileReader();
+
 new Vue({
   router,
   store,
