@@ -1,10 +1,10 @@
 <template>
-  <div class="dashboard">
+  <div class="dashboard" :class="{darkTheme : darkThemeOn }">
     <!------------------------------------Side Panel -------------------------------------->
     <div class="sidePanel">
       <div class="appLogo">
         <img
-          :src="userData.profilePic"
+          :src="$store.getters.getProfilePic"
           alt="applogo"
           height="50px"
           width="auto"
@@ -13,39 +13,60 @@
       </div>
       <div class="userProfile">
         <div class="userMeta">
-          <p class="userMetaName">{{userData.username}}</p>
-          <p class="userMetaEmail">{{userData.email}}</p>
+          <p class="userMetaName">{{ userData.username }}</p>
+          <p class="userMetaEmail">
+            <i class="far fa-envelope"></i>
+            {{ userData.email }}
+          </p>
         </div>
       </div>
       <div>
-        <div class="listOption listOption-myday">
-          <p>My Day</p>
-          <span></span>
+        <div
+          @click="makeActive('myday')"
+          :class="{ active: isActive == 'myday' }"
+          class="listOption listOption-myday"
+        >
+          <div>
+            <i class="fas fa-cloud-sun"></i>
+            <p>My Day</p>
+          </div>
+          <span>{{ count.myday }}</span>
         </div>
-        <div class="listOption listOption-important">
-          <p>Important</p>
-          <span></span>
+        <div
+          @click="makeActive('completed')"
+          :class="{ active: isActive == 'completed' }"
+          class="listOption listOption-completed"
+        >
+          <div>
+            <i class="fas fa-check-double"></i>
+            <p>Completed</p>
+          </div>
+          <span>{{ count.completed }}</span>
         </div>
-        <div class="listOption listOption-completed">
-          <p>Completed</p>
-          <span></span>
-        </div>
-        <div class="listOption listOption-due">
-          <p>Due</p>
-          <span></span>
+        <div
+          @click="makeActive('due')"
+          :class="{ active: isActive == 'due' }"
+          class="listOption listOption-due"
+        >
+          <div>
+            <i class="far fa-calendar-times"></i>
+            <p>Due</p>
+          </div>
+          <span>{{ count.due }}</span>
         </div>
       </div>
-      <!-- <p style="fontSize: 13px">
-        UserData:
-        <br />
-        {{userData}}
-      </p>-->
       <div class="place-bottom width-100">
-        <div class="listOption listOption-settings" @click="$store.state.settingsClicked= true">
-          <p>Settings</p>
+        <div class="listOption listOption-settings" @click="$store.state.settingsClicked = true">
+          <div>
+            <i class="fas fa-cog"></i>
+            <p>Settings</p>
+          </div>
         </div>
         <div class="listOption listOption-logout" @click="logout">
-          <p>Log out</p>
+          <div>
+            <i class="fas fa-sign-out-alt"></i>
+            <p>Log out</p>
+          </div>
         </div>
       </div>
     </div>
@@ -72,6 +93,19 @@ export default {
     return {};
   },
   computed: {
+    darkThemeOn() {
+      if (this.$store.state.theme == "dark") {
+        return true;
+      }
+      return false;
+    },
+    count() {
+      return {
+        myday: this.$store.state.todoCount.myday,
+        completed: this.$store.state.todoCount.completed,
+        due: this.$store.state.todoCount.due,
+      };
+    },
     settingsClicked() {
       return this.$store.state.settingsClicked;
     },
@@ -84,8 +118,21 @@ export default {
     getStoredTodos() {
       return this.$store.getters.getStoredTodos;
     },
+    isActive() {
+      return this.$store.state.show_lists;
+    },
   },
   methods: {
+    makeActive(type) {
+      console.log(type);
+      if (type === "due") {
+        this.$store.state.show_lists = type;
+      } else if (type === "completed") {
+        this.$store.state.show_lists = type;
+      } else {
+        this.$store.state.show_lists = type;
+      }
+    },
     openSettings() {
       this.settingsClicked = true;
     },
@@ -174,44 +221,44 @@ export default {
   font-weight: bold; */
   font-size: 18px;
 }
-.listOption p {
+.listOption:hover {
+  background-color: rgba(238, 238, 238, 0.6);
+}
+.listOption > div {
+  display: flex;
+}
+.listOption > div p {
   margin: 0;
 }
+.listOption > div svg {
+  margin-right: 15px;
+}
 .listOption-myday:hover {
-  color: green;
-  background-color: rgba(0, 128, 0, 0.2);
+  color: dodgerblue;
 }
-.listOption-important:hover {
-  color: rgb(24, 127, 230);
-  background-color: rgba(30, 143, 255, 0.2);
-}
-.listOption-tasks:hover {
-  color: purple;
-  background-color: rgba(128, 0, 128, 0.2);
+.listOption-myday.active {
+  border-right: 3px solid dodgerblue;
+  color: dodgerblue;
 }
 .listOption-completed:hover {
-  color: orange;
-  background-color: rgba(255, 166, 0, 0.2);
+  color: green;
+}
+.listOption-completed.active {
+  border-right: 3px solid green;
+  color: green;
 }
 .listOption-due:hover {
   color: crimson;
-  background-color: rgba(220, 20, 60, 0.2);
 }
-.listOption-logout {
-  color: red;
-  background-color: rgb(238, 238, 238);
+.listOption-due.active {
+  border-right: 3px solid crimson;
+  color: crimson;
 }
 
 .listOption-logout:hover {
-  background-color: rgba(220, 20, 60, 0.095);
-}
-.listOption-settings {
-  color: black;
-  background-color: rgb(238, 238, 238);
+  color: crimson;
 }
 .listOption-settings:hover {
-  color: black;
-  background-color: rgb(238, 238, 238);
 }
 .place-bottom {
   position: absolute;
@@ -246,7 +293,7 @@ export default {
 .settings-head {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 25px;
 }
 .todoDetails-title,
@@ -257,17 +304,10 @@ export default {
 }
 .close-todoDetails-wrap,
 .close-settings-wrap {
-}
-.close-todoDetails,
-.close-settings {
   cursor: pointer;
+  font-size: 24px;
 }
 
-.close-todoDetails:after,
-.close-settings:after {
-  content: "\26CC";
-  color: #2c3e50;
-}
 .created-on {
   /* color: #071a52; */
   font-weight: bold;

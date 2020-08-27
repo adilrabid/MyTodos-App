@@ -7,36 +7,38 @@
         <div>
           <input v-model="todo.title" type="text" class="todoDetails-title" />
         </div>
-        <div class="close-todoDetails-wrap">
-          <span class="close-todoDetails" @click="$store.state.todoClicked = false"></span>
+        <div @click="$store.state.todoClicked = false" class="close-todoDetails-wrap">
+          <i class="fas fa-times"></i>
         </div>
       </div>
       <div class="todoDetails-option">
         <p class="created-on">
+          <i class="far fa-clock"></i>
           Created on: {{ todoCalcData_dateCreated.date }} at
           {{ todoCalcData_dateCreated.time }}
         </p>
       </div>
       <div class="todoDetails-option">
-        <label class="todoDetails-label">Note:</label>
-        <textarea v-model="todo.note" class="todoDetails-note" rows="3" placeholder="Add note..."></textarea>
+        <label class="todoDetails-label">
+          <i class="far fa-clipboard"></i>
+          Note:
+        </label>
+        <textarea v-model="todo.note" class="todoDetails-note" rows="4" placeholder="Add note..."></textarea>
       </div>
       <div class="todoDetails-option">
         <label class="todoDetails-label">Status: {{ todo.status }}</label>
       </div>
-      <!-- <div>
-        {{date}} {{time}}
-        <br />
-        Only date: {{todoCalcData_due_OnlyDate}}
-        <br />
-        Only time: {{todoCalcData_due_OnlyTime}}
-      </div>-->
       <div class="todoDetails-option todoDetails-dueDatePicker">
-        <label
-          class="todoDetails-label"
-        >Due data: {{ todoCalcData_dueDate.date }} at {{ todoCalcData_dueDate.time }}</label>
+        <label class="todoDetails-label">
+          <i class="far fa-calendar-times"></i>
+          Due date: {{ todoCalcData_dueDate.date }} at
+          {{ todoCalcData_dueDate.time }}
+        </label>
         <transition name="dueDatePicker" mode="out-in">
-          <button v-if="!dueDatePicker" @click="dueDatePicker=true" class="dueDatePicker-edit">Edit</button>
+          <button v-if="!dueDatePicker" @click="dueDatePicker = true" class="dueDatePicker-edit">
+            <i class="fas fa-pencil-alt"></i>
+            Edit
+          </button>
           <form @submit.prevent v-else class="dueDatePicker-wrap">
             <label for="datePicker" class="todoDetails-label">Date:</label>
             <input lazy type="date" id="datePicker" class="dueDatePicker" v-model="date" />
@@ -44,24 +46,27 @@
             <label for="timePicker" class="todoDetails-label">Time:</label>
             <input lazy type="time" id="timePicker" class="dueDatePicker" v-model="time" />
             <br />
-            <button @click="dueDatePicker=false" type="submit" class="dueDatePicker-btn ok">Ok</button>
-            <button @click="dueDatePickCancel()" class="dueDatePicker-btn cancel">Cancel</button>
+            <button @click="dueDatePicker = false" type="submit" class="dueDatePicker-btn ok">
+              <i class="fas fa-check"></i>
+              Ok
+            </button>
+            <button @click="dueDatePickCancel()" class="dueDatePicker-btn cancel">
+              <i class="fas fa-times"></i>
+              Cancel
+            </button>
           </form>
         </transition>
       </div>
-
       <div class="place-bottom width-adaptive">
         <div class="todoDetails-option">
           <button @click="updateTodo" class="btn btn-update">
+            <i class="fas fa-cloud-upload-alt"></i>
             <p>Update</p>
           </button>
-          <br />
-          <br />
           <button @click="deleteTodo" class="btn btn-delete">
+            <i class="far fa-trash-alt"></i>
             <p>Delete</p>
           </button>
-          <br />
-          <br />
         </div>
       </div>
     </div>
@@ -73,17 +78,15 @@ export default {
   data() {
     return {
       dueDatePicker: false,
-
       date: "",
       time: "",
-
       todo: {
         title: "",
         dateCreated: "",
         dueDate: "",
         note: "",
         status: "",
-        category: "",
+        completed: "",
       },
     };
   },
@@ -118,6 +121,8 @@ export default {
     },
     updateTodo() {
       console.log("Update clicked");
+      let convertToMS = new Date(this.todo.dueDate);
+      this.todo.dueDate = convertToMS.getTime();
       this.$store.dispatch("updateTodo", this.todo);
     },
     dueDatePickCancel() {
@@ -130,17 +135,18 @@ export default {
     this.todo.title = this.$store.getters.getStoredTodos[
       this.$store.state.clickedTodoIndex
     ].title;
+    this.todo.dateCreated = this.$store.getters.getStoredTodos[
+      this.$store.state.clickedTodoIndex
+    ].dateCreated;
     this.todo.note = this.$store.getters.getStoredTodos[
       this.$store.state.clickedTodoIndex
     ].note;
-    this.todo.category = this.$store.getters.getStoredTodos[
+    this.todo.completed = this.$store.getters.getStoredTodos[
       this.$store.state.clickedTodoIndex
-    ].category;
+    ].completed;
     this.todo.status = this.$store.getters.getStoredTodos[
       this.$store.state.clickedTodoIndex
-    ].completed
-      ? "Completed"
-      : "Incomplete";
+    ].status;
     this.$store.commit(
       "msToActual_creationDate",
       this.$store.getters.getStoredTodos[this.$store.state.clickedTodoIndex]
@@ -162,6 +168,9 @@ export default {
   outline: none;
   transition: 200ms;
   border-radius: 5px;
+  color: inherit;
+  font-weight: 600;
+  max-width: 90%;
 }
 .todoDetails-title:focus,
 .todoDetails-title:hover {
@@ -169,6 +178,7 @@ export default {
   padding: 3px 5px;
   outline: none;
 }
+
 .todoDetails-note {
   font-size: 15px;
   width: 100%;
@@ -246,28 +256,29 @@ export default {
 }
 
 .btn {
+  color: inherit;
   width: 100%;
-  padding: 10px 0px;
-  text-align: center;
+  padding: 10px 20px;
   transition: 200ms;
-  border-radius: 5px;
-  background-color: #fff;
+  margin-bottom: 10px;
   outline: none;
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  background-color: rgba(238, 238, 238, 0.6);
 }
-.btn-delete {
-  color: crimson;
-  border: 0.5px solid crimson;
+.btn:hover {
+  background-color: rgba(182, 182, 182, 0.211);
+}
+.btn svg {
+  margin-right: 18px;
 }
 .btn-delete:hover {
-  color: #fff;
-  background-color: crimson;
-}
-.btn-update {
-  color: #009578;
-  border: 0.5px solid #009578;
+  color: crimson;
 }
 .btn-update:hover {
-  color: white;
-  background-color: #009578;
+  color: #009578;
 }
 </style>

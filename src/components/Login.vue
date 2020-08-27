@@ -12,7 +12,9 @@
             id="email-l"
             class="email"
           />
-          <p v-if="!$v.email.email" class="errorMsg error">Please enter a valid email!</p>
+          <p v-if="!$v.email.email" class="errorMsg error">
+            Please enter a valid email!
+          </p>
         </div>
         <div :class="{ invalid: $v.password.$error }">
           <label for="password-l">Password :</label>
@@ -25,9 +27,14 @@
             autocomplete="false"
           />
         </div>
-        <input :disabled="validationSuccess" type="submit" value="Login" class="submit" />
+        <button :disabled="validationSuccess" type="submit" class="submit">
+          <i class="fas fa-sign-in-alt"></i>
+          Login
+        </button>
         <transition name="fade">
-          <p v-if="loginError" class="errorMsg error" style="marginTop: 0.1px">{{ errorMsg }}</p>
+          <p v-if="loginError" class="errorMsg error" style="marginTop: 0.1px">
+            {{ errorMsg }}
+          </p>
         </transition>
       </form>
     </div>

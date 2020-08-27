@@ -5,11 +5,19 @@ import VueRouter from "vue-router";
 import axios from "axios";
 import { routes } from "./routes";
 import { store } from "./store";
+// font awesome packages
+import { library, dom } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { far } from "@fortawesome/free-regular-svg-icons";
+import { fab } from "@fortawesome/free-brands-svg-icons";
 
 Vue.config.productionTip = false;
 Vue.use(VueLidate);
 Vue.use(VueRouter);
-
+library.add(fas, fab, far);
+dom.watch();
+Vue.component("font-awesome-icon", FontAwesomeIcon);
 axios.defaults.baseURL = "https://mytodos-7797f.firebaseio.com/";
 
 export const router = new VueRouter({

@@ -10,6 +10,7 @@ import img2 from "./assets/img/night.jpg";
 import img3 from "./assets/img/green.jpg";
 import img4 from "./assets/img/sunrise.jpg";
 import img5 from "./assets/img/fairy.jpg";
+import defaultProfilePic from "./assets/user.png";
 
 Vue.use(Vuex);
 export const store = new Vuex.Store({
@@ -41,6 +42,13 @@ export const store = new Vuex.Store({
       "Nov",
       "Dec",
     ],
+    show_lists: "myday",
+    todoCount: {
+      myday: "",
+      completed: "",
+      due: "",
+    },
+    theme: "",
     //for AllLists
     backGround: "",
     // for todo details
@@ -62,7 +70,6 @@ export const store = new Vuex.Store({
           returnSecureToken: true,
         })
         .then((response) => {
-          console.log(response, "signup success");
           context.commit("setTempUserTokenSignup", {
             idToken: response.data.idToken,
             localId: response.data.localId,
@@ -70,16 +77,14 @@ export const store = new Vuex.Store({
           context.dispatch("createUserDB", formdata); // creating a user database in the realtime database
         })
         .catch((error) => {
-          console.log(error);
           context.state.signupError = true;
+          return error;
         });
     },
     createUserDB: (context, formData) => {
-      console.log("createUserDB point 1");
       if (!context.state.tempSignupIdToken) {
         return "Something went wrong!";
       }
-      console.log("createUserDB point 2");
       // some test code here :
       let data = {
         uid: context.state.tempSignupLocalId,
@@ -94,19 +99,16 @@ export const store = new Vuex.Store({
       axiosDB
         .post("userData.json?auth=" + context.state.tempSignupIdToken, data)
         .then((response) => {
-          console.log("new user database created");
           router.push("/login");
           return response;
         })
         .catch((error) => {
-          console.log("user database couldn't be created");
           return error;
         });
     },
     login: (context, formdata) => {
       context.state.loadingStateMsg = "Logging in...";
       context.state.loadingState = true;
-      console.log("login Action entered");
       axiosAuth
         .post(
           "/accounts:signInWithPassword?key=AIzaSyDYv5ceogTvWLnsJe_vN7A1Kau-HpC9z44",
@@ -125,28 +127,22 @@ export const store = new Vuex.Store({
             idToken: response.data.idToken,
             localId: response.data.localId,
           });
-          console.log("Login success");
           router.push("/dashboard");
         })
         .catch((error) => {
-          console.log(error);
           context.state.loginError = true;
           context.state.loadingState = false;
+          return error;
         });
     },
     getUserData: (context) => {
-      console.log("getuserdata called at component initialization");
       if (!context.state.tempIdToken && !context.state.idToken) {
-        console.log("getUserData action discontinued");
         return "Something went wrong!";
       }
-      console.log("getUserData action continued");
       axiosDB
         .get("userData.json?auth=" + context.getters.getAvailableIdToken)
         .then((response) => {
           const alldata = response.data;
-          console.log("typeof alldata : ", typeof alldata);
-          console.log(alldata);
           let userData = null;
           for (let dbId in alldata) {
             const data = alldata[dbId];
@@ -175,7 +171,7 @@ export const store = new Vuex.Store({
           return error;
         });
     },
-    storeTodo: (context, todos) => {
+    storeTodo: (context, todo) => {
       if (!context.state.tempIdToken && !context.state.idToken) {
         return "Something went wrong!";
       }
@@ -185,18 +181,17 @@ export const store = new Vuex.Store({
             localStorage.getItem("dbId") +
             "/todos.json?auth=" +
             context.getters.getAvailableIdToken,
-          todos
+          todo
         )
         .then((response) => {
-          console.log("storing success", response);
           context.dispatch("getTodos");
+          return response;
         })
         .catch((error) => {
-          console.log("storing failed", error);
+          return error;
         });
     },
     getTodos: (context) => {
-      console.log("getTodos initated");
       if (!context.state.tempIdToken && !context.state.idToken) {
         return "Something went wrong!";
       }
@@ -212,6 +207,14 @@ export const store = new Vuex.Store({
           let allTodos = [];
           for (let key in todos) {
             let todo = todos[key];
+            let checkDue = dateTime.getTime() - todo.dueDate;
+            if (checkDue > 0) {
+              todo.status = "Due";
+            } else if (todo.completed) {
+              todo.status = "Completed";
+            } else {
+              todo.status = "Incomplete";
+            }
             todo.key = key;
             allTodos.push(todo);
           }
@@ -219,15 +222,13 @@ export const store = new Vuex.Store({
           context.state.todoClicked = false;
         })
         .catch((error) => {
-          console.log(error);
+          return error;
         });
     },
     deleteTodo: (context) => {
       if (!context.state.tempIdToken && !context.state.idToken) {
         return "Something went wrong!";
       }
-      console.log("deleteTodo action entered");
-      console.log("To delete : ", context.state.clickedTodoKey);
       axiosDB
         .delete(
           "userData/" +
@@ -246,12 +247,13 @@ export const store = new Vuex.Store({
       if (!context.state.tempIdToken && !context.state.idToken) {
         return;
       }
+      let todoKey = context.state.clickedTodoKey;
       axiosDB
         .put(
           "userData/" +
             localStorage.getItem("dbId") +
             "/todos/" +
-            context.state.clickedTodoKey +
+            todoKey +
             ".json?auth=" +
             context.getters.getAvailableIdToken,
           value
@@ -263,7 +265,6 @@ export const store = new Vuex.Store({
     },
     saveSettings: (context, value) => {
       if (!context.state.tempIdToken && !context.state.idToken) {
-        console.log("problem saving settings");
         return;
       }
       axiosDB
@@ -279,7 +280,7 @@ export const store = new Vuex.Store({
           return response;
         })
         .catch((error) => {
-          console.log("saving error: ", error);
+          return error;
         });
     },
   },
@@ -298,16 +299,16 @@ export const store = new Vuex.Store({
     },
     storeUserData: (state, data) => {
       state.userData = data;
+      state.theme = data.theme;
       state.loadingState = false;
     },
     storeTodos: (state, data) => {
       state.todos = data;
     },
     msToActual_creationDate(state, value) {
-      console.log("msToActual_creationDate entered!", value);
-      const createDate = new Date();
+      const createDate = new Date(value);
       let date =
-        createDate.getDate(value) +
+        createDate.getDate() +
         " " +
         state.month[createDate.getMonth()] +
         " " +
@@ -316,7 +317,6 @@ export const store = new Vuex.Store({
       state.dateTimeString_dateCreated = { date, time };
     },
     msToActual_dueDate(state, value) {
-      console.log("msToActual_dueDate entered!", value);
       const dueDate = new Date(value);
       let date =
         dueDate.getDate() +
@@ -372,6 +372,13 @@ export const store = new Vuex.Store({
     },
     getBG(state) {
       return state.userData.bgUrl;
+    },
+    getProfilePic(state) {
+      if (state.userData.profilePic) {
+        console.log("PP detected");
+        return state.userData.profilePic;
+      }
+      return defaultProfilePic;
     },
     namedDateMonth() {
       let day = [

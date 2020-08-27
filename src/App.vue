@@ -148,4 +148,47 @@ a {
 .fade-leave-active {
   transition: all 70ms;
 }
+/* For dark theme */
+.darkTheme .sidePanel .listOption:hover {
+  background-color: rgba(81, 81, 81, 0.1);
+}
+.darkTheme .sidePanel,
+.darkTheme .settings,
+.darkTheme .todoDetails {
+  background-color: rgb(34, 34, 34) !important;
+  color: rgb(174, 174, 174);
+}
+.darkTheme .allLists .todoItem {
+  color: rgb(174, 174, 174);
+  background-color: rgba(34, 34, 34, 0.551);
+}
+.darkTheme .settings .btn,
+.darkTheme .todoDetails .btn {
+  background-color: rgba(73, 73, 73, 0.109) !important;
+}
+.darkTheme .todoDetails .todoDetails-dueDatePicker button {
+  background-color: rgba(73, 73, 73, 0.109) !important;
+  color: inherit;
+}
+.darkTheme .settings input,
+.darkTheme .settings textarea,
+.darkTheme .settings select,
+.darkTheme .settings select option,
+.darkTheme .todoDetails input,
+.darkTheme .todoDetails textarea {
+  background-color: rgb(34, 34, 34) !important;
+  color: rgb(174, 174, 174);
+  border-color: rgb(41, 41, 41);
+}
+
+.darkTheme .settings input:hover,
+.darkTheme .settings textarea:hover,
+.darkTheme .todoDetails input:hover,
+.darkTheme .todoDetails textarea:hover {
+  border-color: rgb(64, 64, 64);
+}
+.darkTheme .settings select option {
+  display: inline-block !important;
+  padding: 50px !important;
+}
 </style>

@@ -15,7 +15,9 @@
             id="username-s"
             class="username"
           />
-          <p v-if="$v.username.$error" class="errorMsg error">Please enter a username!</p>
+          <p v-if="$v.username.$error" class="errorMsg error">
+            Please enter a username!
+          </p>
         </div>
         <div :class="{ invalid: $v.email.$error }">
           <label for="email-s">Email :</label>
@@ -26,7 +28,9 @@
             id="email-s"
             class="email"
           />
-          <p v-if="!$v.email.email" class="errorMsg error">Please enter a valid email!</p>
+          <p v-if="!$v.email.email" class="errorMsg error">
+            Please enter a valid email!
+          </p>
         </div>
         <div :class="{ invalid: $v.password.$error }">
           <label for="password-s">Password :</label>
@@ -38,10 +42,9 @@
             class="password"
             autocomplete="false"
           />
-          <p
-            v-if="$v.password.$error"
-            class="errorMsg error"
-          >Password must be at least 6 characters!</p>
+          <p v-if="$v.password.$error" class="errorMsg error">
+            Password must be at least 6 characters!
+          </p>
         </div>
         <div :class="{ invalid: $v.confirmPassword.$error }">
           <label for="cPassword-s">Confirm password :</label>
@@ -53,7 +56,9 @@
             class="password"
             autocomplete="false"
           />
-          <p v-if="$v.confirmPassword.$error" class="errorMsg error">Passwords didn't matched!</p>
+          <p v-if="$v.confirmPassword.$error" class="errorMsg error">
+            Passwords didn't matched!
+          </p>
         </div>
         <div class="tnc">
           <div>
@@ -64,11 +69,19 @@
               id="tnc-s"
               class="tncCheckbox"
             />
-            <label for="tnc-s" :class="{ error: $v.tnc.$dirty & !$v.tnc.$model }">I agree to the</label>
-            <span class="tncLink" @click="showTnc = true">terms and condition</span>.
+            <label
+              for="tnc-s"
+              :class="{ error: $v.tnc.$dirty & !$v.tnc.$model }"
+              >I agree to the</label
+            >
+            <span class="tncLink" @click="showTnc = true"
+              >terms and condition</span
+            >.
           </div>
         </div>
-        <input :disabled="validationSuccess" type="submit" value="Sign Up" class="submit" />
+        <button :disabled="validationSuccess" type="submit" class="submit">
+          <i class="fas fa-fingerprint"></i> Sign Up
+        </button>
       </form>
     </div>
     <p class="suggession">
