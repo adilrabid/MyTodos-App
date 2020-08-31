@@ -1,3 +1,3 @@
 module.exports = {
-  publicPath: "/Mytodos/",
+  publicPath: "/adilrabid.github.io/",
 };
