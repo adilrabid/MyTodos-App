@@ -30,13 +30,17 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  -moz-osx-font-smoothing: grayscale; */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  /* color: #2c3e50; */
+  color: rgb(46, 46, 46);
   height: 100%;
   width: 100vw;
-  overflow: hidden;
+  overflow: auto;
+  overflow-x: hidden;
 }
 .loadingState {
   position: fixed;
@@ -64,7 +68,7 @@ export default {
   content: "";
   height: 5px;
   width: 20%;
-  background-color: #009578;
+  background-color: var(--primaryColor);
   border-radius: 20px;
   animation-name: loading;
   animation-duration: 1000ms;
@@ -90,14 +94,13 @@ export default {
   }
 }
 a {
-  color: #009578;
+  color: var(--primaryColorLighten);
 }
 .close-btn {
   display: inline-block;
   background: transparent;
   border: none;
-  transform: rotate(45deg);
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 100;
   outline: none;
   cursor: pointer;
@@ -111,10 +114,10 @@ a {
   opacity: 0;
 }
 .Popup-enter-active {
-  transition: all 0.3s;
+  transition: all 0.1s;
 }
 .Popup-leave-active {
-  transition: all 0.2s;
+  transition: all 0.1s;
 }
 .Popup-leave-to {
   /* transform: translateY(-10px); */
@@ -135,7 +138,6 @@ a {
 .slide-fade-leave-active {
   transition: all 100ms ease;
 }
-
 .fade-enter {
   opacity: 0;
 }
@@ -147,6 +149,12 @@ a {
 }
 .fade-leave-active {
   transition: all 70ms;
+}
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 40px;
 }
 /* For dark theme */
 .darkTheme .sidePanel .listOption:hover {
@@ -162,13 +170,16 @@ a {
   color: rgb(174, 174, 174);
   background-color: rgba(34, 34, 34, 0.551);
 }
+.darkTheme .allLists .todoTitle {
+  color: rgb(220, 220, 220);
+}
 .darkTheme .settings .btn,
 .darkTheme .todoDetails .btn {
   background-color: rgba(73, 73, 73, 0.109) !important;
 }
-.darkTheme .todoDetails .todoDetails-dueDatePicker button {
+.darkTheme .todoDetails .todoDetails-dueDatePicker .dueDatePicker-cancel {
   background-color: rgba(73, 73, 73, 0.109) !important;
-  color: inherit;
+  color: inherit !important;
 }
 .darkTheme .settings input,
 .darkTheme .settings textarea,
@@ -190,5 +201,10 @@ a {
 .darkTheme .settings select option {
   display: inline-block !important;
   padding: 50px !important;
+}
+
+.darkTheme .sidePanel_hide {
+  background-color: rgb(34, 34, 34) !important;
+  color: rgb(174, 174, 174);
 }
 </style>

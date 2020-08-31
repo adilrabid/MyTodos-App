@@ -2,36 +2,36 @@
   <!----------------------------------- List Details ------------------------------------>
 
   <div class="todoDetails-wrap">
+    <div @click="$store.state.todoClicked = false" class="sidePanel_hide">
+      <i class="fas fa-chevron-right"></i>
+    </div>
     <div class="todoDetails">
       <div class="todoDetails-head">
         <div>
           <input v-model="todo.title" type="text" class="todoDetails-title" />
         </div>
-        <div @click="$store.state.todoClicked = false" class="close-todoDetails-wrap">
-          <i class="fas fa-times"></i>
-        </div>
       </div>
       <div class="todoDetails-option">
         <p class="created-on">
           <i class="far fa-clock"></i>
-          Created on: {{ todoCalcData_dateCreated.date }} at
+          Created on : {{ todoCalcData_dateCreated.date }} at
           {{ todoCalcData_dateCreated.time }}
         </p>
       </div>
       <div class="todoDetails-option">
         <label class="todoDetails-label">
           <i class="far fa-clipboard"></i>
-          Note:
+          Note :
         </label>
         <textarea v-model="todo.note" class="todoDetails-note" rows="4" placeholder="Add note..."></textarea>
       </div>
       <div class="todoDetails-option">
-        <label class="todoDetails-label">Status: {{ todo.status }}</label>
+        <label class="todoDetails-label">Status : {{ todo.status }}</label>
       </div>
       <div class="todoDetails-option todoDetails-dueDatePicker">
         <label class="todoDetails-label">
           <i class="far fa-calendar-times"></i>
-          Due date: {{ todoCalcData_dueDate.date }} at
+          Due date : {{ todoCalcData_dueDate.date }} at
           {{ todoCalcData_dueDate.time }}
         </label>
         <transition name="dueDatePicker" mode="out-in">
@@ -46,11 +46,15 @@
             <label for="timePicker" class="todoDetails-label">Time:</label>
             <input lazy type="time" id="timePicker" class="dueDatePicker" v-model="time" />
             <br />
-            <button @click="dueDatePicker = false" type="submit" class="dueDatePicker-btn ok">
+            <button
+              @click="dueDatePicker = false"
+              type="submit"
+              class="dueDatePicker-btn dueDatePicker-ok"
+            >
               <i class="fas fa-check"></i>
               Ok
             </button>
-            <button @click="dueDatePickCancel()" class="dueDatePicker-btn cancel">
+            <button @click="dueDatePickCancel()" class="dueDatePicker-btn dueDatePicker-cancel">
               <i class="fas fa-times"></i>
               Cancel
             </button>
@@ -87,6 +91,7 @@ export default {
         note: "",
         status: "",
         completed: "",
+        important: "",
       },
     };
   },
@@ -116,11 +121,9 @@ export default {
   },
   methods: {
     deleteTodo() {
-      console.log("Delete occured");
       this.$store.dispatch("deleteTodo");
     },
     updateTodo() {
-      console.log("Update clicked");
       let convertToMS = new Date(this.todo.dueDate);
       this.todo.dueDate = convertToMS.getTime();
       this.$store.dispatch("updateTodo", this.todo);
@@ -144,6 +147,9 @@ export default {
     this.todo.completed = this.$store.getters.getStoredTodos[
       this.$store.state.clickedTodoIndex
     ].completed;
+    this.todo.important = this.$store.getters.getStoredTodos[
+      this.$store.state.clickedTodoIndex
+    ].important;
     this.todo.status = this.$store.getters.getStoredTodos[
       this.$store.state.clickedTodoIndex
     ].status;
@@ -166,11 +172,11 @@ export default {
 .todoDetails-title {
   border: 0px;
   outline: none;
-  transition: 200ms;
+  transition: padding 200ms;
   border-radius: 5px;
   color: inherit;
   font-weight: 600;
-  max-width: 90%;
+  width: 90%;
 }
 .todoDetails-title:focus,
 .todoDetails-title:hover {
@@ -184,8 +190,8 @@ export default {
   width: 100%;
   outline: none;
   border: none;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  transition: 300ms;
+  font-family: inherit;
+  transition: padding 200ms;
 }
 .todoDetails-note:focus,
 .todoDetails-note:hover {
@@ -196,7 +202,14 @@ export default {
 .todoDetails-dueDatePicker .dueDatePicker-wrap {
   padding: 10px 0px;
 }
-.dueDatePicker-edit {
+.dueDatePicker-edit,
+.dueDatePicker-ok {
+  background-color: #2979ff;
+  color: white !important;
+}
+.dueDatePicker-edit:hover,
+.dueDatePicker-ok:hover {
+  background-color: dodgerblue;
 }
 .dueDatePicker-btn {
   margin-right: 5px;
@@ -214,17 +227,6 @@ export default {
   cursor: pointer;
   transition: 100ms;
 }
-.dueDatePicker-btn:hover,
-.dueDatePicker-edit:hover {
-  background-color: rgb(231, 231, 231);
-}
-.dueDatePicker-btn.ok {
-  /* color: #009578; */
-}
-.dueDatePicker-btn.cancel {
-  /* color: crimson; */
-}
-
 .dueDatePicker-enter-active {
   transition: all 0.1s ease;
 }
@@ -276,7 +278,7 @@ export default {
   margin-right: 18px;
 }
 .btn-delete:hover {
-  color: crimson;
+  color: #e60023;
 }
 .btn-update:hover {
   color: #009578;

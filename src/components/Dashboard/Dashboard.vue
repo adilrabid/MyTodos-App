@@ -1,73 +1,103 @@
 <template>
   <div class="dashboard" :class="{darkTheme : darkThemeOn }">
     <!------------------------------------Side Panel -------------------------------------->
-    <div class="sidePanel">
-      <div class="appLogo">
-        <img
-          :src="$store.getters.getProfilePic"
-          alt="applogo"
-          height="50px"
-          width="auto"
-          style="display: block"
-        />
+    <div class="sidePanel_wrap" :class="{sidePanel_wrap_responsive : $store.state.showSidepanel}">
+      <div class="sidePanel" :class="{sidepanelResponsive : $store.state.showSidepanel}">
+        <div class="profilePic">
+          <img :src="$store.getters.getProfilePic" alt="Profile Picture" />
+        </div>
+        <div class="userProfile">
+          <div class="userMeta">
+            <p class="userMetaName">{{ userData.username }}</p>
+            <p class="userMetaEmail">
+              <i class="far fa-envelope"></i>
+              {{ userData.email }}
+            </p>
+          </div>
+        </div>
+        <div>
+          <!-- Myday todo link -->
+          <div
+            @click="makeActive('myday')"
+            :class="{ active: isActive == 'myday' }"
+            class="listOption listOption-myday"
+          >
+            <div>
+              <span class="icon-container">
+                <i class="fas fa-cloud-sun"></i>
+              </span>
+              <p>My Day</p>
+            </div>
+            <span>{{ count.myday }}</span>
+          </div>
+          <!-- Important todo link -->
+          <div
+            @click="makeActive('important')"
+            :class="{ active: isActive == 'important' }"
+            class="listOption listOption-important"
+          >
+            <div>
+              <span class="icon-container">
+                <i class="fas fa-star"></i>
+              </span>
+              <p>Important</p>
+            </div>
+            <span>{{ count.important }}</span>
+          </div>
+          <!-- Completed todo link -->
+          <div
+            @click="makeActive('completed')"
+            :class="{ active: isActive == 'completed' }"
+            class="listOption listOption-completed"
+          >
+            <div>
+              <span class="icon-container">
+                <i class="fas fa-check-double"></i>
+              </span>
+              <p>Completed</p>
+            </div>
+            <span>{{ count.completed }}</span>
+          </div>
+          <!-- Due todo link -->
+          <div
+            @click="makeActive('due')"
+            :class="{ active: isActive == 'due' }"
+            class="listOption listOption-due"
+          >
+            <div>
+              <span class="icon-container">
+                <i class="far fa-calendar-times"></i>
+              </span>
+              <p>Due</p>
+            </div>
+            <span>{{ count.due }}</span>
+          </div>
+        </div>
+        <div class="place-bottom width-100">
+          <div class="listOption listOption-settings" @click="setingsMenuClicked">
+            <div>
+              <span class="icon-container">
+                <i class="fas fa-cog"></i>
+              </span>
+              <p>Settings</p>
+            </div>
+          </div>
+          <div class="listOption listOption-logout" @click="logout">
+            <div>
+              <span class="icon-container">
+                <i class="fas fa-sign-out-alt"></i>
+              </span>
+              <p>Log out</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="userProfile">
-        <div class="userMeta">
-          <p class="userMetaName">{{ userData.username }}</p>
-          <p class="userMetaEmail">
-            <i class="far fa-envelope"></i>
-            {{ userData.email }}
-          </p>
-        </div>
-      </div>
-      <div>
-        <div
-          @click="makeActive('myday')"
-          :class="{ active: isActive == 'myday' }"
-          class="listOption listOption-myday"
-        >
-          <div>
-            <i class="fas fa-cloud-sun"></i>
-            <p>My Day</p>
-          </div>
-          <span>{{ count.myday }}</span>
-        </div>
-        <div
-          @click="makeActive('completed')"
-          :class="{ active: isActive == 'completed' }"
-          class="listOption listOption-completed"
-        >
-          <div>
-            <i class="fas fa-check-double"></i>
-            <p>Completed</p>
-          </div>
-          <span>{{ count.completed }}</span>
-        </div>
-        <div
-          @click="makeActive('due')"
-          :class="{ active: isActive == 'due' }"
-          class="listOption listOption-due"
-        >
-          <div>
-            <i class="far fa-calendar-times"></i>
-            <p>Due</p>
-          </div>
-          <span>{{ count.due }}</span>
-        </div>
-      </div>
-      <div class="place-bottom width-100">
-        <div class="listOption listOption-settings" @click="$store.state.settingsClicked = true">
-          <div>
-            <i class="fas fa-cog"></i>
-            <p>Settings</p>
-          </div>
-        </div>
-        <div class="listOption listOption-logout" @click="logout">
-          <div>
-            <i class="fas fa-sign-out-alt"></i>
-            <p>Log out</p>
-          </div>
-        </div>
+      <div
+        v-if="$store.state.showSidepanel"
+        @click="$store.state.showSidepanel = false"
+        :class="{sidePanel_hide: $store.state.showSidepanel }"
+      >
+        <i class="fas fa-chevron-left"></i>
       </div>
     </div>
     <!-----------------------------------AllLists ------------------------------------->
@@ -104,6 +134,7 @@ export default {
         myday: this.$store.state.todoCount.myday,
         completed: this.$store.state.todoCount.completed,
         due: this.$store.state.todoCount.due,
+        important: this.$store.state.todoCount.important,
       };
     },
     settingsClicked() {
@@ -123,15 +154,21 @@ export default {
     },
   },
   methods: {
+    setingsMenuClicked() {
+      this.$store.state.settingsClicked = true;
+      this.$store.state.showSidepanel = false;
+    },
     makeActive(type) {
-      console.log(type);
       if (type === "due") {
         this.$store.state.show_lists = type;
       } else if (type === "completed") {
         this.$store.state.show_lists = type;
+      } else if (type === "important") {
+        this.$store.state.show_lists = type;
       } else {
         this.$store.state.show_lists = type;
       }
+      this.$store.state.showSidepanel = false;
     },
     openSettings() {
       this.settingsClicked = true;
@@ -169,28 +206,36 @@ export default {
   display: flex;
   height: 100vh;
   width: 100vw;
+  color: #2c3e50;
+}
+.sidePanel_wrap {
+  width: 45%;
+  height: 100%;
 }
 .sidePanel {
   height: 100%;
-  width: 45%;
+  width: 100%;
   padding: 10px 0px;
   position: relative;
+  background-color: #fff;
 }
-.appLogo {
+.profilePic {
   margin-top: 20px;
   width: 100%;
 }
-.appLogo img {
-  display: inline-block;
+.profilePic img {
+  display: block;
+  border-radius: 50%;
+  height: 70px;
+  width: 70px;
+  object-fit: cover;
   margin: 0px auto;
-  padding: 5px 0px;
 }
 .userProfile {
   display: flex;
   align-items: center;
   padding: 12px 20px;
 }
-
 .userProfilePic {
   margin-right: 15px;
   border-radius: 50%;
@@ -203,7 +248,6 @@ export default {
 }
 .userMetaName {
   font-size: 22px;
-  font-weight: 500;
   margin: 0 0 5px 0;
 }
 .userMetaEmail {
@@ -240,25 +284,30 @@ export default {
   border-right: 3px solid dodgerblue;
   color: dodgerblue;
 }
+.listOption-important:hover {
+  color: orange;
+}
+.listOption-important.active {
+  border-right: 3px solid orange;
+  color: orange;
+}
 .listOption-completed:hover {
-  color: green;
+  color: #009578;
 }
 .listOption-completed.active {
-  border-right: 3px solid green;
-  color: green;
+  border-right: 3px solid #009578;
+  color: #009578;
 }
 .listOption-due:hover {
-  color: crimson;
+  color: #e60023;
 }
 .listOption-due.active {
-  border-right: 3px solid crimson;
-  color: crimson;
+  border-right: 3px solid #e60023;
+  color: #e60023;
 }
 
 .listOption-logout:hover {
-  color: crimson;
-}
-.listOption-settings:hover {
+  color: #e60023;
 }
 .place-bottom {
   position: absolute;
@@ -277,8 +326,12 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.349);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 .todoDetails,
 .settings {
@@ -287,7 +340,7 @@ export default {
   height: 100%;
   width: 400px;
   background-color: #fff;
-  float: right;
+  margin-left: 10px;
 }
 .todoDetails-head,
 .settings-head {
@@ -299,12 +352,7 @@ export default {
 .todoDetails-title,
 .settings-title {
   margin: 0px;
-  /* color: #071a52; */
-  font-size: 24px;
-}
-.close-todoDetails-wrap,
-.close-settings-wrap {
-  cursor: pointer;
+  width: 100%;
   font-size: 24px;
 }
 
@@ -325,7 +373,6 @@ export default {
   margin-bottom: 10px;
   font-weight: bold;
 }
-
 /* Settings style starts */
 .settings-backgroundImage {
   max-width: 100%;
@@ -343,7 +390,7 @@ export default {
 .settings-backgroundImage-option:hover {
   cursor: pointer;
   transform: scale(1.1);
-  box-shadow: 0px 2px 10px 1px rgb(135, 135, 135);
+  box-shadow: 0px 2px 10px 1px rgba(0, 0, 0, 0.503);
 }
 .settings-backgroundImage-option:focus {
   border: 2px solid dodgerblue;
@@ -353,18 +400,89 @@ export default {
   border: 0.5px solid lightgrey;
   outline: none;
   transition: 200ms;
+  margin-left: 5px;
 }
 .settings-colorScheme option {
   background-color: rgb(255, 255, 255);
 }
 .settings-username {
   outline: none;
-  border: 0px;
-  transition: 200ms;
-  font-size: 15px;
-}
-.settings-username:focus {
-  padding: 6px 8px;
   border: 0.5px solid lightgrey;
+  transition: padding 200ms;
+  font-size: 15px;
+  margin: 10px 0 10px 5px;
+  font-family: inherit;
+  padding: 5px 8px;
+}
+
+/* animation */
+.slidePopupSettings-enter-active {
+  transition: all 0.3s ease;
+}
+.slidePopupSettings-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slidePopupSettings-enter,
+.slidePopupSettings-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
+}
+.sidePanel_hide {
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  height: 100px;
+  width: 40px;
+  margin-left: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+@media only screen and (max-width: 667px) {
+  .sidePanel {
+    display: none;
+  }
+  .sidePanel_wrap {
+    display: none;
+  }
+  .sidePanel_wrap_responsive {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    animation-name: slidein;
+    animation-duration: 100ms;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in-out;
+  }
+  .sidepanelResponsive {
+    display: block !important;
+    width: 80%;
+    height: 100%;
+  }
+  @keyframes slidein {
+    to {
+      opacity: 1;
+      transform: translateX(0px);
+    }
+    from {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+  }
+
+  .todoDetails,
+  .settings {
+    width: 80%;
+    backdrop-filter: blur(5px);
+  }
 }
 </style>

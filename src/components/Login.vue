@@ -12,9 +12,7 @@
             id="email-l"
             class="email"
           />
-          <p v-if="!$v.email.email" class="errorMsg error">
-            Please enter a valid email!
-          </p>
+          <p v-if="!$v.email.email" class="errorMsg error">Please enter a valid email!</p>
         </div>
         <div :class="{ invalid: $v.password.$error }">
           <label for="password-l">Password :</label>
@@ -27,14 +25,9 @@
             autocomplete="false"
           />
         </div>
-        <button :disabled="validationSuccess" type="submit" class="submit">
-          <i class="fas fa-sign-in-alt"></i>
-          Login
-        </button>
+        <button :disabled="validationSuccess" type="submit" class="submit">Login</button>
         <transition name="fade">
-          <p v-if="loginError" class="errorMsg error" style="marginTop: 0.1px">
-            {{ errorMsg }}
-          </p>
+          <p v-if="loginError" class="errorMsg error" style="marginTop: 0.1px">{{ errorMsg }}</p>
         </transition>
       </form>
     </div>
@@ -52,14 +45,10 @@ export default {
     return {
       email: null,
       password: null,
-      errorMsg: "Wrong email or passord, try again!",
+      errorMsg: "Wrong email or passord, please try again!",
     };
   },
   watch: {
-    authenticated(value) {
-      console.log("idtoken added", value);
-      this.$router.push("./dashboard");
-    },
     loginError(value) {
       setTimeout(() => {
         this.$store.state.loginError = false;

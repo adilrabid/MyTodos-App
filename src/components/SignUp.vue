@@ -15,9 +15,7 @@
             id="username-s"
             class="username"
           />
-          <p v-if="$v.username.$error" class="errorMsg error">
-            Please enter a username!
-          </p>
+          <p v-if="$v.username.$error" class="errorMsg error">Please enter a username!</p>
         </div>
         <div :class="{ invalid: $v.email.$error }">
           <label for="email-s">Email :</label>
@@ -28,9 +26,7 @@
             id="email-s"
             class="email"
           />
-          <p v-if="!$v.email.email" class="errorMsg error">
-            Please enter a valid email!
-          </p>
+          <p v-if="!$v.email.email" class="errorMsg error">Please enter a valid email!</p>
         </div>
         <div :class="{ invalid: $v.password.$error }">
           <label for="password-s">Password :</label>
@@ -42,9 +38,10 @@
             class="password"
             autocomplete="false"
           />
-          <p v-if="$v.password.$error" class="errorMsg error">
-            Password must be at least 6 characters!
-          </p>
+          <p
+            v-if="$v.password.$error"
+            class="errorMsg error"
+          >Password must be at least 6 characters!</p>
         </div>
         <div :class="{ invalid: $v.confirmPassword.$error }">
           <label for="cPassword-s">Confirm password :</label>
@@ -56,9 +53,7 @@
             class="password"
             autocomplete="false"
           />
-          <p v-if="$v.confirmPassword.$error" class="errorMsg error">
-            Passwords didn't matched!
-          </p>
+          <p v-if="$v.confirmPassword.$error" class="errorMsg error">Passwords didn't matched!</p>
         </div>
         <div class="tnc">
           <div>
@@ -69,19 +64,14 @@
               id="tnc-s"
               class="tncCheckbox"
             />
-            <label
-              for="tnc-s"
-              :class="{ error: $v.tnc.$dirty & !$v.tnc.$model }"
-              >I agree to the</label
-            >
-            <span class="tncLink" @click="showTnc = true"
-              >terms and condition</span
-            >.
+            <label for="tnc-s" :class="{ error: $v.tnc.$dirty & !$v.tnc.$model }">I agree to the</label>
+            <span class="tncLink" @click="showTnc = true">terms and condition</span>.
           </div>
         </div>
-        <button :disabled="validationSuccess" type="submit" class="submit">
-          <i class="fas fa-fingerprint"></i> Sign Up
-        </button>
+        <button :disabled="validationSuccess" type="submit" class="submit">Sign Up</button>
+        <transition name="fade">
+          <p v-if="signupError" class="errorMsg error" style="marginTop: 0.1px">{{ errorMsg }}</p>
+        </transition>
       </form>
     </div>
     <p class="suggession">
@@ -105,7 +95,35 @@ export default {
       confirmPassword: null,
       tnc: false,
       showTnc: false,
+      errorMsg: "The email is already taken! Use a different one.",
     };
+  },
+  computed: {
+    validationSuccess() {
+      if (
+        this.username != null &&
+        this.email != null &&
+        this.password != null &&
+        this.$v.tnc.$model == true &&
+        this.$v.$error == false
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    signupError() {
+      return this.$store.state.signupError;
+    },
+  },
+  watch: {
+    signupError(value) {
+      this.email = "";
+      setTimeout(() => {
+        this.$store.state.signupError = false;
+        return value;
+      }, 5000);
+    },
   },
   validations: {
     tnc: {
@@ -144,21 +162,6 @@ export default {
       this.$router.push("/login");
     },
   },
-  computed: {
-    validationSuccess() {
-      if (
-        this.username != null &&
-        this.email != null &&
-        this.password != null &&
-        this.$v.tnc.$model == true &&
-        this.$v.$error == false
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    },
-  },
 };
 </script>
 
@@ -182,25 +185,25 @@ form.form {
   justify-content: flex-start;
   max-width: 400px;
   margin: 0 auto;
-  box-shadow: 0px 3px 5px 2px rgba(228, 228, 228, 0.5);
-  padding: 30px 40px;
+  /* box-shadow: 0px 3px 5px 2px rgba(228, 228, 228, 0.5); */
+  /* padding: 30px 40px; */
 }
 .form-heading {
   display: block;
   margin: 0 auto 10px;
+  font-weight: 100;
 }
 label,
 .tnc {
-  font-size: 15px;
+  font-size: 14px;
 }
 label[for="tnc-s"] {
   margin-right: 5px;
 }
 .tncLink {
-  color: #009578;
+  color: var(--primaryColorLighten);
   cursor: pointer;
   transition: all 200ms;
-  font-weight: bold;
 }
 
 .email,
@@ -228,24 +231,25 @@ label[for="tnc-s"] {
   border: none;
   outline: none;
   border-radius: 5px;
-  background-color: #009578;
+  background-color: var(--primaryColor);
   color: white;
   transition: background-color 200ms;
 }
 .submit:hover {
-  background-color: #009578;
+  background-color: var(--primaryColorDarken);
   cursor: pointer;
 }
 .submit:disabled {
-  background-color: #0095778e;
+  background-color: var(--primaryColorDisabled);
   cursor: not-allowed;
 }
 .invalid input {
   transition: 300ms;
-  border-color: red;
+  border-color: rgba(255, 0, 0, 0.3);
 }
 .error {
-  color: red;
+  /* color: red; */
+  color: rgba(255, 0, 0, 0.7);
 }
 .errorMsg {
   padding: 0;
@@ -254,7 +258,8 @@ label[for="tnc-s"] {
   margin-bottom: 3px;
 }
 .suggession {
-  margin-top: 20px;
+  margin-top: 10px;
+  font-size: 14px;
 }
 .suggession a {
   cursor: pointer;

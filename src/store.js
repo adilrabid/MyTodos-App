@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axiosDB from "axios";
-import axiosAuth from "./axiosAuth";
+import { axiosAuth, axiosStorage } from "./axiosCustom";
 import { router } from "./main.js";
 import { dateTime } from "./main.js";
 // all images
@@ -10,11 +10,22 @@ import img2 from "./assets/img/night.jpg";
 import img3 from "./assets/img/green.jpg";
 import img4 from "./assets/img/sunrise.jpg";
 import img5 from "./assets/img/fairy.jpg";
-import defaultProfilePic from "./assets/user.png";
 
+import logo1 from "./assets/logos/vuejs.png";
+import logo2 from "./assets/logos/firebase.png";
+import logo3 from "./assets/logos/vuex.png";
+import logo4 from "./assets/logos/vuelidate.png";
+import logo5 from "./assets/logos/axios.png";
+import logo6 from "./assets/logos/fontawesome.png";
+
+import defaultProfilePic from "./assets/user.png";
+import WelcomeCoverPic from "./assets/cover.jpg";
 Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
+    CoverPic: WelcomeCoverPic,
+    logos: [logo1, logo2, logo3, logo4, logo5, logo6],
+    showSidepanel: false,
     idToken: localStorage.getItem("idToken"),
     localId: localStorage.getItem("localId"),
     dbId: localStorage.getItem("dbId"),
@@ -45,6 +56,7 @@ export const store = new Vuex.Store({
     show_lists: "myday",
     todoCount: {
       myday: "",
+      important: "",
       completed: "",
       due: "",
     },
@@ -93,7 +105,7 @@ export const store = new Vuex.Store({
         tnc: formData.tnc,
         profilePic: "",
         todos: [],
-        bgUrl: img3,
+        bgUrl: img5,
         theme: "light",
       };
       axiosDB
@@ -119,20 +131,21 @@ export const store = new Vuex.Store({
           }
         )
         .then((response) => {
-          context.commit("setTempUserToken", {
-            idToken: response.data.idToken,
-            localId: response.data.localId,
-          });
-          context.commit("setUserToken", {
-            idToken: response.data.idToken,
-            localId: response.data.localId,
-          });
-          router.push("/dashboard");
+          if (response.status === 200) {
+            context.commit("setTempUserToken", {
+              idToken: response.data.idToken,
+              localId: response.data.localId,
+            });
+            context.commit("setUserToken", {
+              idToken: response.data.idToken,
+              localId: response.data.localId,
+            });
+            router.push("/dashboard");
+          }
         })
-        .catch((error) => {
+        .catch(() => {
           context.state.loginError = true;
           context.state.loadingState = false;
-          return error;
         });
     },
     getUserData: (context) => {
@@ -205,18 +218,23 @@ export const store = new Vuex.Store({
         .then((response) => {
           const todos = response.data;
           let allTodos = [];
+          let index = 0;
           for (let key in todos) {
             let todo = todos[key];
             let checkDue = dateTime.getTime() - todo.dueDate;
-            if (checkDue > 0) {
-              todo.status = "Due";
-            } else if (todo.completed) {
+            if (todo.completed) {
               todo.status = "Completed";
             } else {
-              todo.status = "Incomplete";
+              if (checkDue > 0) {
+                todo.status = "Due";
+              } else {
+                todo.status = "Incomplete";
+              }
             }
+            todo.index = index;
             todo.key = key;
             allTodos.push(todo);
+            index++;
           }
           context.commit("storeTodos", allTodos);
           context.state.todoClicked = false;
@@ -277,6 +295,23 @@ export const store = new Vuex.Store({
         )
         .then((response) => {
           context.state.settingsClicked = false;
+          return response;
+        })
+        .catch((error) => {
+          return error;
+        });
+    },
+    uploadProfilePic: (context, value) => {
+      if (!context.state.tempIdToken && !context.state.idToken) {
+        return;
+      }
+
+      axiosStorage
+        .put(
+          "profilepic.json?auth=" + context.getters.getAvailableIdToken,
+          value
+        )
+        .then((response) => {
           return response;
         })
         .catch((error) => {
@@ -375,7 +410,6 @@ export const store = new Vuex.Store({
     },
     getProfilePic(state) {
       if (state.userData.profilePic) {
-        console.log("PP detected");
         return state.userData.profilePic;
       }
       return defaultProfilePic;
