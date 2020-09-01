@@ -32,7 +32,7 @@ This will allow you to use vue cli.
 ```
 After that copy that database url and paste it to ‘/src/main.js in axios.defaults.baseURL= “<your copied url>” on line 22’ in project root directory.
 -	The again from the firebase project dashboard go to ‘Authentication’ option, click ‘Set up sign-in method’ and then select ‘Email/password’, enable it and save.
-Then go to [Firebase Auth REST API](https://firebase.google.com/docs/reference/rest/auth) and copy the api endpoint that firebase provides you without ‘/accounts:signInWithCustomToken?key=[API_KEY]’ (example : ` ‘https://identitytoolkit.googleapis.com/v1/’ ` ) and the paste it to: ` ‘/src/axiosCustom.js in baseURL= “<your copied api endpoint>” ` on line 4’ of project root directory.
+Then go to [Firebase Auth REST API](https://firebase.google.com/docs/reference/rest/auth) and copy the api endpoint that firebase provides you without ‘/accounts:signInWithCustomToken?key=[API_KEY]’ (example : ` ‘https://identitytoolkit.googleapis.com/v1/’ ` ) and then paste it to: ` ‘/src/axiosCustom.js in baseURL= “<your copied api endpoint>” ` on line 4’ of project root directory.
 -	Then copy the final api key from firebase project dashboard > settings > Project settings > Web API Key and paste it to: ` ‘/src/store.js in apiKey: “<your copied api endpoint>” ` on line 26’ of project root directory.
 
 #### Ok you’re all set up.
