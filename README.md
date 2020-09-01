@@ -19,7 +19,7 @@ It’s a single page application and no server-side language used so you will no
 ```
 npm install -g @vue/cli
 ```
-	This will allow you to use vue cli.
+This will allow you to use vue cli.
 -	Go to [Firebase](https://firebase.google.com/) and create a new project.
 -	The from the firebase project dashboard create a new Realtime database, set the rules to the following:
 ```javascript
