@@ -23,7 +23,7 @@ import WelcomeCoverPic from "./assets/cover.jpg";
 Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
-    apiKey: "AIzaSyDYv5ceogTvWLnsJe_vN7A1Kau-HpC9z44",
+    apiKey: "",
     CoverPic: WelcomeCoverPic,
     logos: [logo1, logo2, logo3, logo4, logo5, logo6],
     showSidepanel: false,
