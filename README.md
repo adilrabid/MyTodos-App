@@ -3,8 +3,8 @@ A vue js based todolist app
 
 **Version 1.0.0**
 
-Link: https://mytodos-7797f.firebaseapp.com/
-Feel free to create an account and mess around the application.
+Click here [Mytodos](https://mytodos-7797f.firebaseapp.com/) and feel free to create an account and mess around the application.
+
 ## Some features: 
 -	Add/edit your profile credentials.
 -	Manage to-dos by marking them as completed/important.
