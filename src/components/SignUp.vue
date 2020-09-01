@@ -186,12 +186,12 @@ form.form {
   max-width: 400px;
   margin: 0 auto;
   /* box-shadow: 0px 3px 5px 2px rgba(228, 228, 228, 0.5); */
-  /* padding: 30px 40px; */
+  padding: 0px 40px;
 }
 .form-heading {
   display: block;
   margin: 0 auto 10px;
-  font-weight: 100;
+  font-weight: normal;
 }
 label,
 .tnc {

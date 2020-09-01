@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axiosDB from "axios";
-import { axiosAuth, axiosStorage } from "./axiosCustom";
+import axiosAuth from "./axiosCustom";
 import { router } from "./main.js";
 import { dateTime } from "./main.js";
 // all images
@@ -23,6 +23,7 @@ import WelcomeCoverPic from "./assets/cover.jpg";
 Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
+    apiKey: "AIzaSyDYv5ceogTvWLnsJe_vN7A1Kau-HpC9z44",
     CoverPic: WelcomeCoverPic,
     logos: [logo1, logo2, logo3, logo4, logo5, logo6],
     showSidepanel: false,
@@ -76,7 +77,7 @@ export const store = new Vuex.Store({
   actions: {
     signup: (context, formdata) => {
       axiosAuth
-        .post("/accounts:signUp?key=AIzaSyDYv5ceogTvWLnsJe_vN7A1Kau-HpC9z44", {
+        .post("/accounts:signUp?key=" + context.state.apiKey, {
           email: formdata.email,
           password: formdata.password,
           returnSecureToken: true,
@@ -122,14 +123,11 @@ export const store = new Vuex.Store({
       context.state.loadingStateMsg = "Logging in...";
       context.state.loadingState = true;
       axiosAuth
-        .post(
-          "/accounts:signInWithPassword?key=AIzaSyDYv5ceogTvWLnsJe_vN7A1Kau-HpC9z44",
-          {
-            email: formdata.email,
-            password: formdata.password,
-            returnSecureToken: true,
-          }
-        )
+        .post("/accounts:signInWithPassword?key=" + context.state.apiKey, {
+          email: formdata.email,
+          password: formdata.password,
+          returnSecureToken: true,
+        })
         .then((response) => {
           if (response.status === 200) {
             context.commit("setTempUserToken", {
@@ -295,23 +293,6 @@ export const store = new Vuex.Store({
         )
         .then((response) => {
           context.state.settingsClicked = false;
-          return response;
-        })
-        .catch((error) => {
-          return error;
-        });
-    },
-    uploadProfilePic: (context, value) => {
-      if (!context.state.tempIdToken && !context.state.idToken) {
-        return;
-      }
-
-      axiosStorage
-        .put(
-          "profilepic.json?auth=" + context.getters.getAvailableIdToken,
-          value
-        )
-        .then((response) => {
           return response;
         })
         .catch((error) => {

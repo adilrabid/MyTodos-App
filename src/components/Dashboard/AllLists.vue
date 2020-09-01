@@ -395,7 +395,7 @@ export default {
 }
 .allLists-title {
   margin: 0 0 5px 0;
-  font-weight: 100;
+  font-weight: normal;
   color: white;
   text-shadow: 0 3px 2px rgba(0, 0, 0, 0.2);
 }

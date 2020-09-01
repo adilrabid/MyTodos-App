@@ -215,10 +215,8 @@ export default {
   margin-bottom: 20px;
 }
 .welcome-heading {
-  /* color: var(--primaryColor); */
-  font-weight: 100;
+  font-weight: normal;
   margin: 0 0 20px 10px;
-  /* text-shadow: 5px 3px 5px rgba(0, 0, 0, 0.421); */
 }
 .welcome-msg {
   font-size: 22px;
@@ -248,7 +246,7 @@ export default {
 }
 .welcome-features-title,
 .welcome-builtWith-title {
-  font-weight: 100;
+  font-weight: normal;
   text-align: center;
   margin-bottom: 10px;
 }
@@ -300,12 +298,11 @@ export default {
   font-size: 40px;
 }
 .welcome-features-option h3 {
-  font-weight: 100;
+  font-weight: normal;
   margin-bottom: 10px;
 }
 .welcome-features-option p {
   font-weight: 100;
-  font-size: small;
 }
 .welcome-quote {
   padding: 50px 0px 10px;
@@ -315,7 +312,7 @@ export default {
   margin-bottom: 30px;
 }
 .welcome-quote-title {
-  font-weight: 100;
+  font-weight: normal;
 }
 .welcome-quote-msg {
   font-weight: 100;

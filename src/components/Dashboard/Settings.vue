@@ -101,13 +101,6 @@ export default {
     },
   },
   watch: {
-    // selectedPPError(value) {
-    //   if (value) {
-    //     setTimeout(() => {
-    //       this.selectedPPError = null;
-    //     }, 4000);
-    //   }
-    // },
     theme(value) {
       this.$store.state.theme = value;
     },
@@ -122,8 +115,8 @@ export default {
     },
     changeProfilePic(event) {
       this.selectedPP = event.target.files[0];
-      if (this.selectedPP.size > 1000000) {
-        this.selectedPPError = "Please select an image smaller than 1 MB";
+      if (this.selectedPP.size > 2000000) {
+        this.selectedPPError = "Please select an image smaller than 2 MB";
         this.selectedPP = null;
         return;
       }
@@ -143,7 +136,7 @@ export default {
     this.username = this.$store.state.userData.username;
     this.bgUrl = this.$store.state.userData.bgUrl;
     this.theme = this.$store.getters.userData.theme;
-    this.profilePic = this.$store.getters.userData.profilePic;
+    this.profilePic = this.$store.getters.getProfilePic;
   },
 };
 </script>

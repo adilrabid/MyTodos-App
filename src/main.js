@@ -18,11 +18,13 @@ Vue.use(VueRouter);
 library.add(fas, fab, far);
 dom.watch();
 Vue.component("font-awesome-icon", FontAwesomeIcon);
+//base url for datebase (firebase realtime database).
 axios.defaults.baseURL = "https://mytodos-7797f.firebaseio.com/";
 
 export const router = new VueRouter({
   routes,
   mode: "history",
+  base: process.env.BASE_URL,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       //checks if there is any saved position
