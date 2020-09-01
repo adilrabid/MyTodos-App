@@ -36,8 +36,9 @@ Then go to https://firebase.google.com/docs/reference/rest/auth and copy the api
 Ok you’re all set up.
 
 Now in order to actually run the application, open the command prompt and run:
+```
 	npm run serve
-
+```
 This will create a virtual development server and the app will be served at something like this : localhost://XXXX
 
 ##Thank you!
